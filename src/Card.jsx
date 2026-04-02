@@ -7,7 +7,7 @@ const Card = ({ card, removetocard }) => {
     <div
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #f5f7fa 0%, #e8f0e9 100%)",
+        background: "linear-gradient(135  deg, #f5f7fa 0%, #e8f0e9 100%)",
         fontFamily: "'Segoe UI', sans-serif",
         padding: "40px 60px",
       }}
@@ -52,8 +52,6 @@ const Card = ({ card, removetocard }) => {
           🛍️ {card.length} items
         </div>
       </div>
-
-      {/* Empty State */}
       {card.length === 0 ? (
         <div
           style={{
@@ -74,7 +72,6 @@ const Card = ({ card, removetocard }) => {
         </div>
       ) : (
         <>
-          {/* Product Grid */}
           <div
             style={{
               display: "grid",
@@ -95,7 +92,6 @@ const Card = ({ card, removetocard }) => {
                   flexDirection: "column",
                 }}
               >
-                {/* Image */}
                 <div
                   style={{
                     backgroundColor: "#f8f8f8",
@@ -116,8 +112,6 @@ const Card = ({ card, removetocard }) => {
                     }}
                   />
                 </div>
-
-                {/* Info */}
                 <div
                   style={{
                     padding: "14px 16px",
@@ -160,7 +154,7 @@ const Card = ({ card, removetocard }) => {
                       marginTop: "auto",
                       width: "100%",
                       padding: "10px",
-                      backgroundColor: "#e74c3c",
+                      backgroundColor: "#e6381d",
                       color: "white",
                       border: "none",
                       borderRadius: "10px",
@@ -175,8 +169,6 @@ const Card = ({ card, removetocard }) => {
               </div>
             ))}
           </div>
-
-          {/* Total Section */}
           <div
             style={{
               display: "flex",

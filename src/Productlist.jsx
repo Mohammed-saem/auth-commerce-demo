@@ -24,7 +24,6 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
         padding: "40px 60px",
       }}
     >
-      {/* Header */}
       <div
         style={{
           display: "flex",
@@ -46,7 +45,7 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
             🛍️ ShopZone
           </h1>
           <p style={{ margin: "4px 0 0", color: "#888", fontSize: "14px" }}>
-            Discover amazing products
+            Discover amazing products By Saem
           </p>
         </div>
         <div
@@ -63,7 +62,6 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
         </div>
       </div>
 
-  
       <div
         style={{
           backgroundColor: "white",
@@ -77,7 +75,6 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
           boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
         }}
       >
-      
         <div style={{ position: "relative", flex: "1", minWidth: "200px" }}>
           <span
             style={{
@@ -113,12 +110,10 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
           style={{ width: "1px", height: "32px", backgroundColor: "#e0e0e0" }}
         />
 
-       
         <span style={{ fontSize: "13px", color: "#888", fontWeight: "600" }}>
           Sort:
         </span>
 
-     
         {["ALL", "low-high", "high-low"].map((option) => (
           <button
             key={option}
@@ -143,12 +138,10 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
           </button>
         ))}
 
-    
         <div
           style={{ width: "1px", height: "32px", backgroundColor: "#e0e0e0" }}
         />
 
-   
         <span style={{ fontSize: "13px", color: "#888", fontWeight: "600" }}>
           View:
         </span>
@@ -186,16 +179,15 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
         </button>
       </div>
 
-     
       <p
         style={{
-          color: "#888",
+          color: "#be9e9e",
           fontSize: "13px",
           marginBottom: "20px",
           marginTop: 0,
         }}
       >
-        Showing <strong style={{ color: "#1a1a2e" }}>{sortdata.length}</strong>{" "}
+        Showing <strong style={{ color: "#1a1a2e" }}>{sortdata.length} </strong>
         products
       </p>
 
@@ -226,7 +218,7 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
               >
                 <div
                   style={{
-                    backgroundColor: "#f8f8f8",
+                    backgroundColor: "#bfbeb4",
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
