@@ -7,25 +7,26 @@ const Card = ({ card, removetocard }) => {
     <div
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(135  deg, #f5f7fa 0%, #e8f0e9 100%)",
+        background: "linear-gradient(135deg, #f5f7fa 0%, #e8f0e9 100%)",
         fontFamily: "'Segoe UI', sans-serif",
-        padding: "40px 60px",
+        padding: "24px 16px",
       }}
     >
-      {/* Header */}
       <div
         style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: "36px",
+          marginBottom: "24px",
+          flexWrap: "wrap",
+          gap: "12px",
         }}
       >
         <div>
           <h1
             style={{
               margin: 0,
-              fontSize: "32px",
+              fontSize: "clamp(22px, 5vw, 32px)",
               fontWeight: "800",
               color: "#1a1a2e",
               letterSpacing: "-1px",
@@ -52,12 +53,13 @@ const Card = ({ card, removetocard }) => {
           🛍️ {card.length} items
         </div>
       </div>
+
       {card.length === 0 ? (
         <div
           style={{
             backgroundColor: "white",
             borderRadius: "16px",
-            padding: "60px",
+            padding: "40px 20px",
             textAlign: "center",
             boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
           }}
@@ -75,9 +77,9 @@ const Card = ({ card, removetocard }) => {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-              gap: "24px",
-              marginBottom: "40px",
+              gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
+              gap: "16px",
+              marginBottom: "32px",
             }}
           >
             {card.map((item) => (
@@ -99,22 +101,22 @@ const Card = ({ card, removetocard }) => {
                     justifyContent: "center",
                     alignItems: "center",
                     padding: "16px",
-                    height: "160px",
+                    height: "140px",
                   }}
                 >
                   <img
                     src={item.thumbnail}
                     alt={item.title}
                     style={{
-                      height: "130px",
-                      width: "130px",
+                      height: "110px",
+                      width: "110px",
                       objectFit: "contain",
                     }}
                   />
                 </div>
                 <div
                   style={{
-                    padding: "14px 16px",
+                    padding: "12px 14px",
                     flex: 1,
                     display: "flex",
                     flexDirection: "column",
@@ -125,7 +127,7 @@ const Card = ({ card, removetocard }) => {
                     style={{
                       margin: 0,
                       fontWeight: "700",
-                      fontSize: "14px",
+                      fontSize: "13px",
                       color: "#1a1a2e",
                       lineHeight: "1.4",
                       display: "-webkit-box",
@@ -136,18 +138,16 @@ const Card = ({ card, removetocard }) => {
                   >
                     {item.title}
                   </p>
-
                   <p
                     style={{
                       margin: 0,
-                      fontSize: "18px",
+                      fontSize: "17px",
                       fontWeight: "800",
                       color: "#2ecc71",
                     }}
                   >
                     ${item.price}
                   </p>
-
                   <button
                     onClick={() => removetocard(item.id)}
                     style={{
@@ -160,7 +160,7 @@ const Card = ({ card, removetocard }) => {
                       borderRadius: "10px",
                       cursor: "pointer",
                       fontWeight: "700",
-                      fontSize: "13px",
+                      fontSize: "12px",
                     }}
                   >
                     🗑️ Remove
@@ -169,6 +169,7 @@ const Card = ({ card, removetocard }) => {
               </div>
             ))}
           </div>
+
           <div
             style={{
               display: "flex",
@@ -179,8 +180,9 @@ const Card = ({ card, removetocard }) => {
               style={{
                 backgroundColor: "white",
                 borderRadius: "16px",
-                padding: "24px 32px",
-                minWidth: "280px",
+                padding: "20px",
+                width: "100%",
+                maxWidth: "360px",
                 boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
                 display: "flex",
                 flexDirection: "column",
@@ -197,7 +199,6 @@ const Card = ({ card, removetocard }) => {
               >
                 Order Summary
               </h3>
-
               <div
                 style={{
                   display: "flex",
@@ -211,7 +212,6 @@ const Card = ({ card, removetocard }) => {
                   ${total.toFixed(2)}
                 </span>
               </div>
-
               <div
                 style={{
                   display: "flex",
@@ -225,7 +225,6 @@ const Card = ({ card, removetocard }) => {
                   FREE
                 </span>
               </div>
-
               <div
                 style={{
                   borderTop: "1.5px dashed #e0e0e0",
@@ -254,7 +253,6 @@ const Card = ({ card, removetocard }) => {
                   ${total.toFixed(2)}
                 </span>
               </div>
-
               <button
                 style={{
                   width: "100%",
