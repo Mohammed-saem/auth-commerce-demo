@@ -34,7 +34,7 @@
 }
 
 .card {
-  padding: 2em;
+  padding: 2em; 
 }
 
 .read-the-docs {
@@ -45,4 +45,8 @@ body {
   margin: 0;
   padding: 0;
 }
-
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #121212; /* Dark mode body background */
+  }
+}

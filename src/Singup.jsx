@@ -21,6 +21,7 @@ const Singup = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     seterror({});
+    
     const newerror = {};
     if (!form.Name) newerror.Name = "name is required"
     if (!form.email) newerror.email = "email is required";
