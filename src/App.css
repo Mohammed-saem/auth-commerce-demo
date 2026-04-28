@@ -41,12 +41,32 @@
   color: #888;
 }
 body {
-  background: #f2f4f8;
+  background: #f2f4f8; /* Light mode background - theek hai */
   margin: 0;
   padding: 0;
 }
 @media (prefers-color-scheme: dark) {
   body {
-    background: #121212; /* Dark mode body background */
+    background: #121212;
+
+  input {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    border: 1px solid #555;
   }
+
+  label {
+    color: #ffffff;
+  }
+
+
+  h1, h2, h3 {
+    color: #ffffff;
+  }
+
+
+  .card {
+    background-color: #1e1e1e;
+    color: #ffffff;  }
+}
 }
