@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, {  useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { auth } from './firebase'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
@@ -14,9 +14,6 @@ const Singup = () => {
   });
   const [error, seterror] = useState({});
 
-  useEffect(() => {
-    document.body.style.background = "#f2f4f8";
-  }, [])
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -50,6 +47,7 @@ const Singup = () => {
     <div style={{
       minHeight: "100vh",
       padding: "25px",
+      width:"100%",
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
@@ -57,7 +55,7 @@ const Singup = () => {
       boxSizing: "border-box",
     }}>
       <div style={{
-        width: "min(90%, 450px)",
+      width: "min(90%, 450px)", 
         padding: "25px",
         background: "#fff",
         borderRadius: "8px",

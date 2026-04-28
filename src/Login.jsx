@@ -58,13 +58,13 @@ const Login = () => {
         width: "min(90%, 450px)",
         boxSizing: "border-box",
         padding: "25px",
-          background: "var(--bg-card)",
+          background: "var(--bg-card)",    //
         borderRadius: "8px",
         boxShadow: "0 4px 12px rgba(0,0,0,0.6)",
         marginBottom: "30px",
       }}>
         <form onSubmit={handleSubmit}>
-           <h2 style={{ cursor: "pointer", color: "var(--text-color)" }}>Login</h2>
+           <h2 style={{ cursor: "pointer", color: "var(--text-color)" }}>Login Page</h2>
 
           <div style={{ marginBottom: "15px" }}>
             <label style={{ display: "block", marginBottom: "5px", cursor: "pointer" }}>Email</label>
