@@ -1,4 +1,4 @@
-import React, {  useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { auth } from './firebase'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
@@ -14,11 +14,9 @@ const Singup = () => {
   });
   const [error, seterror] = useState({});
 
-
   const handleSubmit = (e) => {
     e.preventDefault();
     seterror({});
-    
     const newerror = {};
     if (!form.Name) newerror.Name = "name is required"
     if (!form.email) newerror.email = "email is required";
@@ -46,63 +44,59 @@ const Singup = () => {
   return (
     <div style={{
       minHeight: "100vh",
-      padding: "25px",
-      // width:"100%",
+      width: "100%",
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      background: "#f2f4f8",
+      background: "var(--bg-outer)",
+      padding: "25px",
       boxSizing: "border-box",
     }}>
-
-  
       <div style={{
-  width: "min(500px, 90vw)",
-  padding: "25px",
-  background: "#fff",
-  borderRadius: "8px",
-  boxShadow: "0 4px 12px rgba(0,0,0,0.7)",
-  marginBottom: "30px",
-  boxSizing: "border-box",
+        width: "500px",
+        padding: "25px",
+        background: "var(--bg-card)",
+        borderRadius: "8px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.6)",
+        marginBottom: "30px",
+        boxSizing: "border-box",
       }}>
-
-        
         <form onSubmit={handleSubmit}>
-          <h2 style={{ textAlign: "center", marginBottom: "20px", cursor: "pointer" }}>
+          <h2 style={{ textAlign: "center", marginBottom: "20px", cursor: "pointer", color: "var(--text-color)" }}>
             Singup Page
           </h2>
 
           <div style={{ marginBottom: "15px" }}>
-            <label style={{ display: "block", marginBottom: "5px", cursor: "pointer" }}>Name</label>
+            <label style={{ display: "block", marginBottom: "5px", cursor: "pointer", color: "var(--text-color)" }}>Name</label>
             <input
               type="text"
               placeholder='Enter your name'
               value={form.Name}
-              style={{ width: "100%", height: "36px", boxSizing: "border-box", border: "1px solid #ccc", }}
+              style={{ width: "100%", height: "36px", boxSizing: "border-box", border: "1px solid #ccc", background: "var(--input-bg)", color: "var(--text-color)" }}
               onChange={(e) => setform({ ...form, Name: e.target.value })}
             />
             {error.Name && <p style={{ color: "red" }}>{error.Name}</p>}
           </div>
 
           <div style={{ marginBottom: "15px" }}>
-            <label style={{ display: "block", marginBottom: "5px", cursor: "pointer", }}>Email</label>
+            <label style={{ display: "block", marginBottom: "5px", cursor: "pointer", color: "var(--text-color)" }}>Email</label>
             <input
               type="email"
               placeholder='Enter your email'
               value={form.email}
-              style={{ width: "100%", height: "36px", boxSizing: "border-box", border: "1px solid #ccc",}}
+              style={{ width: "100%", height: "36px", boxSizing: "border-box", border: "1px solid #ccc", background: "var(--input-bg)", color: "var(--text-color)" }}
               onChange={(e) => setform({ ...form, email: e.target.value })}
             />
             {error.email && <p style={{ color: "red" }}>{error.email}</p>}
           </div>
 
           <div style={{ marginBottom: "15px" }}>
-            <label style={{ display: "block", marginBottom: "5px", cursor: "pointer" }}>Password</label>
+            <label style={{ display: "block", marginBottom: "5px", cursor: "pointer", color: "var(--text-color)" }}>Password</label>
             <div style={{ position: "relative", width: "100%" }}>
               <input
                 type={show ? 'password' : 'text'}
                 placeholder='Enter your password'
-                style={{ width: "100%", height: "36px", paddingRight: "36px", boxSizing: "border-box", border: "1px solid #ccc", }}
+                style={{ width: "100%", height: "36px", paddingRight: "36px", boxSizing: "border-box", border: "1px solid #ccc", background: "var(--input-bg)", color: "var(--text-color)" }}
                 value={form.password}
                 onChange={(e) => {
                   setform({ ...form, password: e.target.value });
@@ -137,7 +131,7 @@ const Singup = () => {
             }}
             type='submit'>Singup</button>
 
-          <p style={{ cursor: "pointer" }}>
+          <p style={{ cursor: "pointer", color: "var(--text-color)" }}>
             Already have an account?{" "}
             <span onClick={() => navigate('/Login')} style={{ cursor: "pointer", color: "rebeccapurple" }}>Login</span>
           </p>
