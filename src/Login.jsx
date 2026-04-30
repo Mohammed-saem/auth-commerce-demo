@@ -55,7 +55,8 @@ const Login = () => {
       boxSizing: "border-box",
     }}>
       <div style={{
-        width: "min(90%, 450px)",
+        width: "min(90%, 480px)",
+              maxWidth: "480px", 
         boxSizing: "border-box",
         padding: "25px",
           background: "var(--bg-card)",    //

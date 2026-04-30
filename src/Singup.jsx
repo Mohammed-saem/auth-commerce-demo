@@ -47,22 +47,26 @@ const Singup = () => {
     <div style={{
       minHeight: "100vh",
       padding: "25px",
-      width:"100%",
+      // width:"100%",
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
       background: "#f2f4f8",
       boxSizing: "border-box",
     }}>
+
+  
       <div style={{
-      width: "min(90%, 450px)", 
-        padding: "25px",
-        background: "#fff",
-        borderRadius: "8px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.7)",
-        marginBottom: "30px",
-        boxSizing: "border-box",
+  width: "min(500px, 90vw)",
+  padding: "25px",
+  background: "#fff",
+  borderRadius: "8px",
+  boxShadow: "0 4px 12px rgba(0,0,0,0.7)",
+  marginBottom: "30px",
+  boxSizing: "border-box",
       }}>
+
+        
         <form onSubmit={handleSubmit}>
           <h2 style={{ textAlign: "center", marginBottom: "20px", cursor: "pointer" }}>
             Singup Page
@@ -74,19 +78,19 @@ const Singup = () => {
               type="text"
               placeholder='Enter your name'
               value={form.Name}
-              style={{ width: "100%", height: "36px", boxSizing: "border-box" }}
+              style={{ width: "100%", height: "36px", boxSizing: "border-box", border: "1px solid #ccc", }}
               onChange={(e) => setform({ ...form, Name: e.target.value })}
             />
             {error.Name && <p style={{ color: "red" }}>{error.Name}</p>}
           </div>
 
           <div style={{ marginBottom: "15px" }}>
-            <label style={{ display: "block", marginBottom: "5px", cursor: "pointer" }}>Email</label>
+            <label style={{ display: "block", marginBottom: "5px", cursor: "pointer", }}>Email</label>
             <input
               type="email"
               placeholder='Enter your email'
               value={form.email}
-              style={{ width: "100%", height: "36px", boxSizing: "border-box" }}
+              style={{ width: "100%", height: "36px", boxSizing: "border-box", border: "1px solid #ccc",}}
               onChange={(e) => setform({ ...form, email: e.target.value })}
             />
             {error.email && <p style={{ color: "red" }}>{error.email}</p>}
@@ -98,7 +102,7 @@ const Singup = () => {
               <input
                 type={show ? 'password' : 'text'}
                 placeholder='Enter your password'
-                style={{ width: "100%", height: "36px", paddingRight: "36px", boxSizing: "border-box" }}
+                style={{ width: "100%", height: "36px", paddingRight: "36px", boxSizing: "border-box", border: "1px solid #ccc", }}
                 value={form.password}
                 onChange={(e) => {
                   setform({ ...form, password: e.target.value });

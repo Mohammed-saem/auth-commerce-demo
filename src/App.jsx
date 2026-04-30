@@ -9,7 +9,7 @@ import Login from "./Login.jsx";
 
 function App() {
   return (
-    <div>
+
       <BrowserRouter>
         <Header />
         <Routes>
@@ -20,7 +20,7 @@ function App() {
           <Route path="/Get" element={<Get />} />
         </Routes>
       </BrowserRouter>
-    </div>
+
   );
 }
 
