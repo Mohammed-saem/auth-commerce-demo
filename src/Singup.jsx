@@ -53,9 +53,9 @@ const Singup = () => {
       boxSizing: "border-box",
     }}>
       <div style={{
-        width: "500px",
+        width: "360px",
         padding: "25px",
-        background: "var(--bg-card)",
+        background: "var(--bg-card)", 
         borderRadius: "8px",
         boxShadow: "0 4px 12px rgba(0,0,0,0.6)",
         marginBottom: "30px",
@@ -72,7 +72,7 @@ const Singup = () => {
               type="text"
               placeholder='Enter your name'
               value={form.Name}
-              style={{ width: "100%", height: "36px", boxSizing: "border-box", border: "1px solid #ccc", background: "var(--input-bg)", color: "var(--text-color)" }}
+              style={{ width: "100%", height: "36px", boxSizing: "border-box", border: "1.7px solid #070707", background: "var(--input-bg)", color: "var(--text-color)" }}
               onChange={(e) => setform({ ...form, Name: e.target.value })}
             />
             {error.Name && <p style={{ color: "red" }}>{error.Name}</p>}
@@ -84,7 +84,7 @@ const Singup = () => {
               type="email"
               placeholder='Enter your email'
               value={form.email}
-              style={{ width: "100%", height: "36px", boxSizing: "border-box", border: "1px solid #ccc", background: "var(--input-bg)", color: "var(--text-color)" }}
+              style={{ width: "100%", height: "36px", boxSizing: "border-box",  border: "1.7px solid #070707", background: "var(--input-bg)", color: "var(--text-color)" }}
               onChange={(e) => setform({ ...form, email: e.target.value })}
             />
             {error.email && <p style={{ color: "red" }}>{error.email}</p>}
@@ -96,7 +96,7 @@ const Singup = () => {
               <input
                 type={show ? 'password' : 'text'}
                 placeholder='Enter your password'
-                style={{ width: "100%", height: "36px", paddingRight: "36px", boxSizing: "border-box", border: "1px solid #ccc", background: "var(--input-bg)", color: "var(--text-color)" }}
+                style={{ width: "100%", height: "36px", paddingRight: "36px", boxSizing: "border-box",  border: "1.7px solid #070707", background: "var(--input-bg)", color: "var(--text-color)" }}
                 value={form.password}
                 onChange={(e) => {
                   setform({ ...form, password: e.target.value });
