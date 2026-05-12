@@ -6,6 +6,7 @@ import { auth } from './firebase';
 const Login = () => {
   const navigate = useNavigate();
   const [show, setshow] = useState(true);
+  const [success, setsuccess] = useState(false);
   const [showToggle, setshowToggle] = useState(false);
   const [form, setform] = useState({
     email: "",
@@ -33,8 +34,10 @@ const Login = () => {
     }
 
     signInWithEmailAndPassword(auth, form.email, form.password).then(() => {
-      alert("Login Successfully")
-      navigate("/Get")
+      setsuccess(true);
+      setTimeout(() => {
+        navigate("/Get")
+      }, 2000);
     }).catch((err) => {
       const message = {
         "auth/invalid-credential": "Invalid email or password",
@@ -50,22 +53,22 @@ const Login = () => {
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-        background: "var(--bg-outer)",
+      background: "var(--bg-outer)",
       padding: "25px",
       boxSizing: "border-box",
     }}>
       <div style={{
-        width: "min(90%, 480px)",
-              maxWidth: "480px", 
+        width: "min(90%, 360px)",
+        maxWidth: "480px",
         boxSizing: "border-box",
         padding: "25px",
-          background: "var(--bg-card)",    //
+        background: "var(--bg-card)",
         borderRadius: "8px",
         boxShadow: "0 4px 12px rgba(0,0,0,0.6)",
         marginBottom: "30px",
       }}>
         <form onSubmit={handleSubmit}>
-           <h2 style={{ cursor: "pointer", color: "var(--text-color)" }}>Login Page</h2>
+          <h2 style={{ cursor: "pointer", color: "var(--text-color)" }}>Login Page</h2>
 
           <div style={{ marginBottom: "15px" }}>
             <label style={{ display: "block", marginBottom: "5px", cursor: "pointer" }}>Email</label>
@@ -73,19 +76,18 @@ const Login = () => {
               type="email"
               placeholder='Enter your email'
               value={form.email}
-              style={{ width: "100%", height: "36px", boxSizing: "border-box" ,  background: "var(--input-bg)",  color: "var(--text-color)",  }}
-
+              style={{ width: "100%", height: "36px", boxSizing: "border-box", background: "var(--input-bg)", color: "var(--text-color)" }}
               onChange={(e) => setform({ ...form, email: e.target.value })}
             />
           </div>
 
           <div style={{ marginBottom: "15px" }}>
-             <label style={{ display: "block", marginBottom: "5px", cursor: "pointer", color: "var(--text-color)" }}>Password</label>
+            <label style={{ display: "block", marginBottom: "5px", cursor: "pointer", color: "var(--text-color)" }}>Password</label>
             <div style={{ position: "relative", width: "100%" }}>
               <input
                 type={show ? 'password' : 'text'}
                 placeholder='Enter your password'
-                style={{ width: "100%", height: "36px", paddingRight: "36px", boxSizing: "border-box" ,background: "var(--input-bg)",  color: "var(--text-color)",}}
+                style={{ width: "100%", height: "36px", paddingRight: "36px", boxSizing: "border-box", background: "var(--input-bg)", color: "var(--text-color)" }}
                 value={form.password}
                 onChange={(e) => {
                   setform({ ...form, password: e.target.value });
@@ -107,6 +109,19 @@ const Login = () => {
 
           {error && <p style={{ color: "red" }}>{error}</p>}
 
+          {success && (
+            <div style={{
+              background: "#28a745",
+              color: "#fff",
+              padding: "10px",
+              borderRadius: "4px",
+              textAlign: "center",
+              marginTop: "10px",
+            }}>
+              ✅ Login Successfully! Redirecting...
+            </div>
+          )}
+
           <button type='submit' style={{
             width: "100%",
             padding: "10px",
@@ -120,7 +135,7 @@ const Login = () => {
           }}>Login</button>
         </form>
 
-        <div style={{ marginTop: "15px",  color: "var(--text-color)"  }}>
+        <div style={{ marginTop: "15px", color: "var(--text-color)" }}>
           Having trouble signing in? <a href="/Forget" style={{ textDecoration: "none" }}>Reset your password.</a>
         </div>
 

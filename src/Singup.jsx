@@ -13,6 +13,7 @@ const Singup = () => {
     password: "",
   });
   const [error, seterror] = useState({});
+  const [success, setsuccess] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -28,8 +29,10 @@ const Singup = () => {
       return;
     }
     createUserWithEmailAndPassword(auth, form.email, form.password).then(() => {
-      alert('Singup Successfully')
-      navigate("/Get")
+      setsuccess(true);
+      setTimeout(() => {
+        navigate("/Get")
+      }, 2000);
     }).catch((error) => {
       if (error.code === 'auth/email-already-in-use') {
         alert('email is Already register please login')
@@ -55,7 +58,7 @@ const Singup = () => {
       <div style={{
         width: "360px",
         padding: "25px",
-        background: "var(--bg-card)", 
+        background: "var(--bg-card)",
         borderRadius: "8px",
         boxShadow: "0 4px 12px rgba(0,0,0,0.6)",
         marginBottom: "30px",
@@ -84,7 +87,7 @@ const Singup = () => {
               type="email"
               placeholder='Enter your email'
               value={form.email}
-              style={{ width: "100%", height: "36px", boxSizing: "border-box",  border: "1.7px solid #070707", background: "var(--input-bg)", color: "var(--text-color)" }}
+              style={{ width: "100%", height: "36px", boxSizing: "border-box", border: "1.7px solid #070707", background: "var(--input-bg)", color: "var(--text-color)" }}
               onChange={(e) => setform({ ...form, email: e.target.value })}
             />
             {error.email && <p style={{ color: "red" }}>{error.email}</p>}
@@ -96,7 +99,7 @@ const Singup = () => {
               <input
                 type={show ? 'password' : 'text'}
                 placeholder='Enter your password'
-                style={{ width: "100%", height: "36px", paddingRight: "36px", boxSizing: "border-box",  border: "1.7px solid #070707", background: "var(--input-bg)", color: "var(--text-color)" }}
+                style={{ width: "100%", height: "36px", paddingRight: "36px", boxSizing: "border-box", border: "1.7px solid #070707", background: "var(--input-bg)", color: "var(--text-color)" }}
                 value={form.password}
                 onChange={(e) => {
                   setform({ ...form, password: e.target.value });
@@ -116,6 +119,19 @@ const Singup = () => {
             </div>
             {error.password && <p style={{ color: "red" }}>{error.password}</p>}
           </div>
+
+          {success && (
+            <div style={{
+              background: "#28a745",
+              color: "#fff",
+              padding: "10px",
+              borderRadius: "4px",
+              textAlign: "center",
+              marginTop: "10px",
+            }}>
+              ✅ Signup Successfully! Redirecting...
+            </div>
+          )}
 
           <button
             style={{

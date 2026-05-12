@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Productlist = ({ data, card, addtocard, removetocard }) => {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("ALL");
   const [view, setView] = useState("grid");
+  const [selectproduct, setselectproduct] = useState(null);
 
   const searchdata = data.filter((item) =>
     item.title.toLowerCase().includes(search.toLowerCase())
@@ -24,6 +26,146 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
         padding: "24px 16px",
       }}
     >
+      {selectproduct && (
+        <div
+          onClick={() => setselectproduct(null)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: "white",
+              borderRadius: "20px",
+              padding: "28px",
+              width: "90%",
+              maxWidth: "420px",
+              position: "relative",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
+            }}
+          >
+            <button
+              onClick={() => setselectproduct(null)}
+              style={{
+                position: "absolute",
+                top: "16px",
+                right: "16px",
+                background: "#f0f0f0",
+                border: "none",
+                borderRadius: "50%",
+                width: "32px",
+                height: "32px",
+                cursor: "pointer",
+                fontSize: "16px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              ✕
+            </button>
+
+            <div
+              style={{
+                backgroundColor: "#bfbeb4",
+                borderRadius: "14px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "200px",
+                marginBottom: "20px",
+              }}
+            >
+              hello
+              <img
+                src={selectproduct.thumbnail}
+                alt={selectproduct.title}
+                style={{
+                  height: "160px",
+                  width: "160px",
+                  objectFit: "contain",
+                }}
+              />
+            </div>
+
+            <p
+              style={{
+                margin: "0 0 6px",
+                fontWeight: "700",
+                fontSize: "16px",
+                color: "#1a1a2e",
+              }}
+            >
+              {selectproduct.title}
+            </p>
+
+            <p
+              style={{
+                margin: "0 0 10px",
+                fontSize: "13px",
+                color: "#888",
+              }}
+            >
+              {selectproduct.category} &nbsp;•&nbsp; ⭐ {selectproduct.rating}{" "}
+              &nbsp;•&nbsp; Stock: {selectproduct.stock}
+            </p>
+
+            <p
+              style={{
+                margin: "0 0 10px",
+                fontSize: "24px",
+                fontWeight: "800",
+                color: "#2ecc71",
+              }}
+            >
+              ${selectproduct.price}
+            </p>
+
+            <p
+              style={{
+                margin: "0 0 20px",
+                fontSize: "14px",
+                color: "#555",
+                lineHeight: "1.6",
+              }}
+            >
+              {selectproduct.description}
+            </p>
+
+            <button
+              onClick={() => {
+                inCart(selectproduct.id)
+                  ? removetocard(selectproduct.id)
+                  : addtocard(selectproduct);
+              }}
+              style={{
+                width: "100%",
+                padding: "12px",
+                backgroundColor: inCart(selectproduct.id) ? "#e74c3c" : "#1a1a2e",
+                color: "white",
+                border: "none",
+                borderRadius: "12px",
+                cursor: "pointer",
+                fontWeight: "700",
+                fontSize: "14px",
+              }}
+            >
+              {inCart(selectproduct.id) ? "🗑️ Remove from Cart" : "🛒 Add to Cart"}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div
         style={{
           display: "flex",
@@ -60,7 +202,11 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
             fontSize: "14px",
           }}
         >
-          🛒 {card.length} items in cart
+          
+    <Link to="/Card" style={{backgroundColor: "#2ecc71", textDecoration: "none",}}>
+  🛒 {card.length} items in cart
+  </Link>
+  
         </div>
       </div>
 
@@ -181,7 +327,8 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
           marginTop: 0,
         }}
       >
-        Showing <strong style={{ color: "#1a1a2e" }}>{sortdata.length} </strong>
+        Showing{" "}
+        <strong style={{ color: "#1a1a2e" }}>{sortdata.length} </strong>
         products
       </p>
 
@@ -198,10 +345,12 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
             return (
               <div
                 key={item.id}
+                onClick={() => setselectproduct(item)}
                 style={{
                   backgroundColor: "white",
                   borderRadius: "16px",
                   overflow: "hidden",
+                  cursor: "pointer",
                   boxShadow: isInCart
                     ? "0 0 0 2px #2ecc71, 0 8px 24px rgba(46,204,113,0.15)"
                     : "0 4px 20px rgba(0,0,0,0.07)",
@@ -281,9 +430,10 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
                     </span>
                   )}
                   <button
-                    onClick={() =>
-                      isInCart ? removetocard(item.id) : addtocard(item)
-                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      isInCart ? removetocard(item.id) : addtocard(item);
+                    }}
                     style={{
                       marginTop: "auto",
                       width: "100%",
@@ -315,14 +465,60 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
             boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
           }}
         >
-          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "480px" }}>
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              minWidth: "480px",
+            }}
+          >
             <thead>
               <tr style={{ backgroundColor: "#1a1a2e", color: "white" }}>
-                <th style={{ padding: "14px 16px", textAlign: "left", fontSize: "13px" }}>Image</th>
-                <th style={{ padding: "14px 16px", textAlign: "left", fontSize: "13px" }}>Product</th>
-                <th style={{ padding: "14px 16px", textAlign: "left", fontSize: "13px" }}>Price</th>
-                <th style={{ padding: "14px 16px", textAlign: "left", fontSize: "13px" }}>Status</th>
-                <th style={{ padding: "14px 16px", textAlign: "left", fontSize: "13px" }}>Action</th>
+                <th
+                  style={{
+                    padding: "14px 16px",
+                    textAlign: "left",
+                    fontSize: "13px",
+                  }}
+                >
+                  Image
+                </th>
+                <th
+                  style={{
+                    padding: "14px 16px",
+                    textAlign: "left",
+                    fontSize: "13px",
+                  }}
+                >
+                  Product
+                </th>
+                <th
+                  style={{
+                    padding: "14px 16px",
+                    textAlign: "left",
+                    fontSize: "13px",
+                  }}
+                >
+                  Price
+                </th>
+                <th
+                  style={{
+                    padding: "14px 16px",
+                    textAlign: "left",
+                    fontSize: "13px",
+                  }}
+                >
+                  Status
+                </th>
+                <th
+                  style={{
+                    padding: "14px 16px",
+                    textAlign: "left",
+                    fontSize: "13px",
+                  }}
+                >
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -331,6 +527,7 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
                 return (
                   <tr
                     key={item.id}
+                    onClick={() => setselectproduct(item)}
                     style={{
                       backgroundColor: isInCart
                         ? "#f0fdf4"
@@ -339,6 +536,7 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
                         : "white",
                       borderBottom: "1px solid #f0f0f0",
                       transition: "background 0.2s",
+                      cursor: "pointer",
                     }}
                   >
                     <td style={{ padding: "12px 16px" }}>
@@ -405,9 +603,10 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
                     </td>
                     <td style={{ padding: "12px 16px" }}>
                       <button
-                        onClick={() =>
-                          isInCart ? removetocard(item.id) : addtocard(item)
-                        }
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          isInCart ? removetocard(item.id) : addtocard(item);
+                        }}
                         style={{
                           padding: "8px 14px",
                           backgroundColor: isInCart ? "#e74c3c" : "#1a1a2e",

@@ -44,6 +44,7 @@ body {
   background: #f2f4f8;
   margin: 0;
   padding: 0;
+   overflow-x: hidden;
 }
 :root {
   --bg-outer: #f2f4f8;

@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Card = ({ card, removetocard }) => {
   const total = card.reduce((sum, item) => sum + item.price, 0);
@@ -6,10 +7,10 @@ const Card = ({ card, removetocard }) => {
   return (
     <div
       style={{
-        minHeight: "100vh",
         background: "linear-gradient(135deg, #f5f7fa 0%, #e8f0e9 100%)",
         fontFamily: "'Segoe UI', sans-serif",
         padding: "24px 16px",
+
       }}
     >
       <div
@@ -34,12 +35,24 @@ const Card = ({ card, removetocard }) => {
           >
             🛒 Your Cart
           </h1>
-          <p style={{ margin: "4px 0 0", color: "#888", fontSize: "14px" }}>
+
+          <p
+            style={{
+              margin: "4px 0 0",
+              color: "#888",
+              fontSize: "14px",
+            }}
+          >
             {card.length === 0
               ? "Your cart is empty"
               : `${card.length} item${card.length > 1 ? "s" : ""} added`}
           </p>
+
+     
+
         </div>
+       
+      
         <div
           style={{
             backgroundColor: card.length > 0 ? "#2ecc71" : "#ccc",
@@ -54,21 +67,63 @@ const Card = ({ card, removetocard }) => {
         </div>
       </div>
 
+
+
+   <Link to={'/Get'} style={{
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "6px",
+  backgroundColor: "#1a1a2e",
+  color: "white",
+  textDecoration: "none",
+  padding: "10px 18px",
+  borderRadius: "10px",
+  fontWeight: "700",
+  fontSize: "13px",
+  marginBottom:"20px"
+}}>
+  ← Continue Shopping
+</Link>
+  
+
+
+
+
       {card.length === 0 ? (
         <div
           style={{
             backgroundColor: "white",
             borderRadius: "16px",
             padding: "40px 20px",
+          
             textAlign: "center",
             boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
           }}
         >
-          <p style={{ fontSize: "60px", margin: 0 }}>🛒</p>
-          <h3 style={{ color: "#1a1a2e", marginTop: "16px" }}>
+          <p
+            style={{
+              fontSize: "60px",
+              margin: 0,
+            }}
+          >
+            🛒
+          </p>
+
+          <h3
+            style={{
+              color: "#1a1a2e",
+              marginTop: "16px",
+            }}
+          >
             Cart is empty!
           </h3>
-          <p style={{ color: "#aaa", fontSize: "14px" }}>
+
+          <p
+            style={{
+              color: "#aaa",
+              fontSize: "14px",
+            }}
+          >
             Go add some products first
           </p>
         </div>
@@ -77,7 +132,8 @@ const Card = ({ card, removetocard }) => {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
+              gridTemplateColumns:
+                "repeat(auto-fill, minmax(160px, 1fr))",
               gap: "16px",
               marginBottom: "32px",
             }}
@@ -114,6 +170,7 @@ const Card = ({ card, removetocard }) => {
                     }}
                   />
                 </div>
+
                 <div
                   style={{
                     padding: "12px 14px",
@@ -138,6 +195,7 @@ const Card = ({ card, removetocard }) => {
                   >
                     {item.title}
                   </p>
+
                   <p
                     style={{
                       margin: 0,
@@ -148,6 +206,7 @@ const Card = ({ card, removetocard }) => {
                   >
                     ${item.price}
                   </p>
+
                   <button
                     onClick={() => removetocard(item.id)}
                     style={{
@@ -199,6 +258,7 @@ const Card = ({ card, removetocard }) => {
               >
                 Order Summary
               </h3>
+
               <div
                 style={{
                   display: "flex",
@@ -208,10 +268,17 @@ const Card = ({ card, removetocard }) => {
                 }}
               >
                 <span>Items ({card.length})</span>
-                <span style={{ fontWeight: "600", color: "#1a1a2e" }}>
+
+                <span
+                  style={{
+                    fontWeight: "600",
+                    color: "#1a1a2e",
+                  }}
+                >
                   ${total.toFixed(2)}
                 </span>
               </div>
+
               <div
                 style={{
                   display: "flex",
@@ -221,10 +288,17 @@ const Card = ({ card, removetocard }) => {
                 }}
               >
                 <span>Shipping</span>
-                <span style={{ fontWeight: "600", color: "#2ecc71" }}>
+
+                <span
+                  style={{
+                    fontWeight: "600",
+                    color: "#2ecc71",
+                  }}
+                >
                   FREE
                 </span>
               </div>
+
               <div
                 style={{
                   borderTop: "1.5px dashed #e0e0e0",
@@ -243,6 +317,7 @@ const Card = ({ card, removetocard }) => {
                 >
                   Total
                 </span>
+
                 <span
                   style={{
                     fontWeight: "800",
@@ -253,6 +328,7 @@ const Card = ({ card, removetocard }) => {
                   ${total.toFixed(2)}
                 </span>
               </div>
+
               <button
                 style={{
                   width: "100%",

@@ -1,11 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Productlist from "./Productlist";
-import Card from "./Card";
 
-const Get = () => {
+const Get = ({ card, addtocard, removetocard }) => {
   const [data, setdata] = useState([]);
-  const [card, setcard] = useState([]);
 
   useEffect(() => {
     const fetchdata = async () => {
@@ -19,13 +17,6 @@ const Get = () => {
     fetchdata();
   }, []);
 
-  const addtocard = (data) => {
-    setcard([...card, data]);
-  };
-  const removetocard = (id) => {
-    setcard(card.filter((item) => item.id !== id));
-  };
-
   return (
     <div>
       <Productlist
@@ -34,7 +25,6 @@ const Get = () => {
         addtocard={addtocard}
         removetocard={removetocard}
       />
-      <Card card={card} removetocard={removetocard} />
     </div>
   );
 };

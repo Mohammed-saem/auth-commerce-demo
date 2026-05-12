@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { auth } from './firebase';
 import { sendPasswordResetEmail } from 'firebase/auth';
 
-// import emailjs from '@emailjs/browser'
+
 
 const Forget = () => {
   const [email, setemail] = useState("");
