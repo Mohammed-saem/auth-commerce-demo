@@ -333,7 +333,7 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+    gridTemplateColumns: window.innerWidth < 768 ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
             gap: "16px",
           }}
         >

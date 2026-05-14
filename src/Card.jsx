@@ -58,7 +58,10 @@ const Card = ({ card, removetocard }) => {
         </div>
       ) : (
         <>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px", marginBottom: "32px" }}>
+          <div style={{ display: "grid",
+           gridTemplateColumns: window.innerWidth < 768 ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
+              gap: "16px",
+               marginBottom: "32px" }}>
             {card.map((item) => (
               <div key={item.id} style={{ backgroundColor: "white", borderRadius: "16px", overflow: "hidden", boxShadow: "0 4px 20px rgba(0,0,0,0.07)", display: "flex", flexDirection: "column" }}>
                 <div style={{ backgroundColor: "#f8f8f8", display: "flex", justifyContent: "center", alignItems: "center", padding: "16px", height: "140px" }}>
