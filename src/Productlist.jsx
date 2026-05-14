@@ -23,7 +23,7 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
         minHeight: "100vh",
         background: "linear-gradient(135deg, #f5f7fa 0%, #e8f0e9 100%)",
         fontFamily: "'Segoe UI', sans-serif",
-        padding: "24px 16px",
+        padding: "24px 40px",
       }}
     >
       {selectproduct && (
@@ -86,7 +86,6 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
                 marginBottom: "20px",
               }}
             >
-              hello
               <img
                 src={selectproduct.thumbnail}
                 alt={selectproduct.title}
@@ -202,11 +201,9 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
             fontSize: "14px",
           }}
         >
-          
-    <Link to="/Card" style={{backgroundColor: "#2ecc71", textDecoration: "none",}}>
-  🛒 {card.length} items in cart
-  </Link>
-  
+          <Link to="/Card" style={{ backgroundColor: "#2ecc71", textDecoration: "none" }}>
+            🛒 {card.length} items in cart
+          </Link>
         </div>
       </div>
 
@@ -336,7 +333,7 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
+            gridTemplateColumns: "repeat(4, 1fr)",
             gap: "16px",
           }}
         >
@@ -365,16 +362,16 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    padding: "16px",
-                    height: "140px",
+                    padding: "12px",
+                    height: "160px",
                   }}
                 >
                   <img
                     src={item.thumbnail}
                     alt={item.title}
                     style={{
-                      height: "110px",
-                      width: "110px",
+                      height: "130px",
+                      width: "130px",
                       objectFit: "contain",
                     }}
                   />
@@ -382,18 +379,18 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
 
                 <div
                   style={{
-                    padding: "12px 14px",
+                    padding: "10px 12px",
                     flex: 1,
                     display: "flex",
                     flexDirection: "column",
-                    gap: "8px",
+                    gap: "6px",
                   }}
                 >
                   <p
                     style={{
                       margin: 0,
                       fontWeight: "700",
-                      fontSize: "13px",
+                      fontSize: "12px",
                       color: "#1a1a2e",
                       lineHeight: "1.4",
                       display: "-webkit-box",
@@ -407,7 +404,7 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
                   <p
                     style={{
                       margin: 0,
-                      fontSize: "17px",
+                      fontSize: "15px",
                       fontWeight: "800",
                       color: "#2ecc71",
                     }}
@@ -437,7 +434,7 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
                     style={{
                       marginTop: "auto",
                       width: "100%",
-                      padding: "10px",
+                      padding: "14px",
                       backgroundColor: isInCart ? "#e74c3c" : "#1a1a2e",
                       color: "white",
                       border: "none",
@@ -474,51 +471,11 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
           >
             <thead>
               <tr style={{ backgroundColor: "#1a1a2e", color: "white" }}>
-                <th
-                  style={{
-                    padding: "14px 16px",
-                    textAlign: "left",
-                    fontSize: "13px",
-                  }}
-                >
-                  Image
-                </th>
-                <th
-                  style={{
-                    padding: "14px 16px",
-                    textAlign: "left",
-                    fontSize: "13px",
-                  }}
-                >
-                  Product
-                </th>
-                <th
-                  style={{
-                    padding: "14px 16px",
-                    textAlign: "left",
-                    fontSize: "13px",
-                  }}
-                >
-                  Price
-                </th>
-                <th
-                  style={{
-                    padding: "14px 16px",
-                    textAlign: "left",
-                    fontSize: "13px",
-                  }}
-                >
-                  Status
-                </th>
-                <th
-                  style={{
-                    padding: "14px 16px",
-                    textAlign: "left",
-                    fontSize: "13px",
-                  }}
-                >
-                  Action
-                </th>
+                <th style={{ padding: "14px 16px", textAlign: "left", fontSize: "13px" }}>Image</th>
+                <th style={{ padding: "14px 16px", textAlign: "left", fontSize: "13px" }}>Product</th>
+                <th style={{ padding: "14px 16px", textAlign: "left", fontSize: "13px" }}>Price</th>
+                <th style={{ padding: "14px 16px", textAlign: "left", fontSize: "13px" }}>Status</th>
+                <th style={{ padding: "14px 16px", textAlign: "left", fontSize: "13px" }}>Action</th>
               </tr>
             </thead>
             <tbody>
