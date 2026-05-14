@@ -23,11 +23,11 @@ const Card = ({ card, removetocard }) => {
 
       {model && (
         <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 }}>
-          <div style={{ backgroundColor: "white", borderRadius: "20px", padding: "40px", textAlign: "center", maxWidth: "400px", width: "90%", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
-            <p style={{ fontSize: "60px", margin: 0 }}>✅</p>
-            <h2 style={{ color: "#1a1a2e", margin: "16px 0 8px" }}>Order Placed!</h2>
-            <p style={{ color: "#888", fontSize: "15px" }}>Successfully placed {model}</p>
-            <button onClick={() => setmodel(false)} style={{ marginTop: "20px", padding: "12px 30px", backgroundColor: "#1a1a2e", color: "white", border: "none", borderRadius: "10px", cursor: "pointer", fontWeight: "700", fontSize: "14px" }}>
+          <div style={{ backgroundColor: "white", borderRadius: "20px", padding: "20px", textAlign: "center", maxWidth: "260px", width: "75%", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
+            <p style={{ fontSize: "40px", margin: 0 }}>✅</p>
+            <h2 style={{ color: "#1a1a2e", margin: "10px 0 6px", fontSize: "clamp(14px, 4vw, 20px)" }}>Order Placed!</h2>
+            <p style={{ color: "#888", fontSize: "clamp(11px, 3vw, 14px)", margin: 0 }}>Successfully placed {model}</p>
+            <button onClick={() => setmodel(false)} style={{ marginTop: "16px", padding: "10px 24px", backgroundColor: "#1a1a2e", color: "white", border: "none", borderRadius: "10px", cursor: "pointer", fontWeight: "700", fontSize: "13px" }}>
               Close
             </button>
           </div>
@@ -58,7 +58,7 @@ const Card = ({ card, removetocard }) => {
         </div>
       ) : (
         <>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", marginBottom: "32px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px", marginBottom: "32px" }}>
             {card.map((item) => (
               <div key={item.id} style={{ backgroundColor: "white", borderRadius: "16px", overflow: "hidden", boxShadow: "0 4px 20px rgba(0,0,0,0.07)", display: "flex", flexDirection: "column" }}>
                 <div style={{ backgroundColor: "#f8f8f8", display: "flex", justifyContent: "center", alignItems: "center", padding: "16px", height: "140px" }}>
@@ -93,7 +93,7 @@ const Card = ({ card, removetocard }) => {
                 <span style={{ fontWeight: "800", fontSize: "22px", color: "#2ecc71" }}>${total.toFixed(2)}</span>
               </div>
               <button onClick={handlecheakout} disabled={loading} style={{ width: "100%", padding: "12px", backgroundColor: loading ? "#888" : "#1a1a2e", color: "white", border: "none", borderRadius: "10px", cursor: loading ? "not-allowed" : "pointer", fontWeight: "700", fontSize: "14px", marginTop: "4px", letterSpacing: "0.5px" }}>
-               .. {loading ? "⏳ Processing." : "✅ Checkout Now"}
+                {loading ? "⏳ Processing..." : "✅ Checkout Now"}
               </button>
             </div>
           </div>
