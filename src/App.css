@@ -62,3 +62,101 @@ body {
   }
 }
 
+/* Unified Responsive Container */
+.page-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8f0e9 100%);
+  font-family: 'Segoe UI', sans-serif;
+  padding: 24px 40px 100px;
+  box-sizing: border-box;
+}
+
+/* Dynamic Responsive Product Grid */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1024px) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .page-container {
+    padding: 24px 24px 100px;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .page-container {
+    padding: 16px 16px 90px;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .page-container {
+    padding: 12px 12px 90px;
+  }
+}
+
+/* Premium Dashboard Responsive Grid Layout */
+.dashboard-container {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.dashboard-left {
+  width: 240px;
+  flex-shrink: 0;
+  order: 1;
+}
+
+.dashboard-center {
+  flex: 1;
+  min-width: 0;
+  order: 2;
+}
+
+.dashboard-right {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  order: 3;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-container {
+    flex-direction: column;
+    gap: 20px;
+    padding: 0 4px;
+  }
+  .dashboard-left {
+    width: 100%;
+    order: 2; /* Shows below profile card on tablet/mobile */
+  }
+  .dashboard-center {
+    width: 100%;
+    order: 1; /* Shows at the top on tablet/mobile */
+  }
+  .dashboard-right {
+    width: 100%;
+    order: 3; /* Shows at the bottom on tablet/mobile */
+  }
+}
+
+
+

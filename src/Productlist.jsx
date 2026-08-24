@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const Productlist = ({ data, card, addtocard, removetocard }) => {
@@ -6,6 +6,28 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
   const [sort, setSort] = useState("ALL");
   const [view, setView] = useState("grid");
   const [selectproduct, setselectproduct] = useState(null);
+
+  // Wishlist state - localStorage se load karo
+  const [wishlist, setWishlist] = useState(() => {
+    const saved = localStorage.getItem("wishlist");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // Jab bhi wishlist change ho, localStorage mein save karo
+  useEffect(() => {
+    localStorage.setItem("wishlist", JSON.stringify(wishlist));
+  }, [wishlist]);
+
+  const isInWishlist = (id) => wishlist.some((w) => w.id === id);
+
+  const toggleWishlist = (item, e) => {
+    if (e) e.stopPropagation(); // card click trigger na ho
+    setWishlist((prev) =>
+      prev.some((w) => w.id === item.id)
+        ? prev.filter((w) => w.id !== item.id)
+        : [...prev, item]
+    );
+  };
 
   const searchdata = data.filter((item) =>
     item.title.toLowerCase().includes(search.toLowerCase())
@@ -18,14 +40,7 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
   const inCart = (id) => card.some((c) => c.id === id);
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "linear-gradient(135deg, #f5f7fa 0%, #e8f0e9 100%)",
-        fontFamily: "'Segoe UI', sans-serif",
-        padding: "24px 40px",
-      }}
-    >
+    <div className="page-container">
       {selectproduct && (
         <div
           onClick={() => setselectproduct(null)}
@@ -73,6 +88,28 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
               }}
             >
               ✕
+            </button>
+
+            {/* Wishlist button in modal too */}
+            <button
+              onClick={(e) => toggleWishlist(selectproduct, e)}
+              style={{
+                position: "absolute",
+                top: "16px",
+                left: "16px",
+                background: "#f0f0f0",
+                border: "none",
+                borderRadius: "50%",
+                width: "32px",
+                height: "32px",
+                cursor: "pointer",
+                fontSize: "16px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {isInWishlist(selectproduct.id) ? "❤️" : "🤍"}
             </button>
 
             <div
@@ -191,19 +228,34 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
             Discover amazing products By Saem
           </p>
         </div>
-        <div
-          style={{
-            backgroundColor: "#2ecc71",
-            color: "white",
-            borderRadius: "20px",
-            padding: "8px 18px",
-            fontWeight: "bold",
-            fontSize: "14px",
-          }}
-        >
-          <Link to="/Card" style={{ backgroundColor: "#2ecc71", textDecoration: "none" }}>
-            🛒 {card.length} items in cart
-          </Link>
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          {/* Wishlist counter link */}
+          <div
+            style={{
+              backgroundColor: "#e74c3c",
+              color: "white",
+              borderRadius: "20px",
+              padding: "8px 18px",
+              fontWeight: "bold",
+              fontSize: "14px",
+            }}
+          >
+            ❤️ {wishlist.length} wishlist
+          </div>
+          <div
+            style={{
+              backgroundColor: "#2ecc71",
+              color: "white",
+              borderRadius: "20px",
+              padding: "8px 18px",
+              fontWeight: "bold",
+              fontSize: "14px",
+            }}
+          >
+            <Link to="/Account" state={{ defaultTab: "cart" }} style={{ backgroundColor: "#2ecc71", textDecoration: "none", color: "white" }}>
+              🛒 {card.length} items in cart
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -274,8 +326,8 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
             {option === "high-low"
               ? "💰 High → Low"
               : option === "low-high"
-              ? "💸 Low → High"
-              : "✨ All"}
+                ? "💸 Low → High"
+                : "✨ All"}
           </button>
         ))}
 
@@ -330,15 +382,10 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
       </p>
 
       {view === "grid" && (
-        <div
-          style={{
-            display: "grid",
-    gridTemplateColumns: window.innerWidth < 768 ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
-            gap: "16px",
-          }}
-        >
+        <div className="product-grid">
           {sortdata.map((item) => {
             const isInCart = inCart(item.id);
+            const wished = isInWishlist(item.id);
             return (
               <div
                 key={item.id}
@@ -358,6 +405,7 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
               >
                 <div
                   style={{
+                    position: "relative",
                     backgroundColor: "#bfbeb4",
                     display: "flex",
                     justifyContent: "center",
@@ -366,12 +414,37 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
                     height: "160px",
                   }}
                 >
+                  {/* ❤️ Wishlist button - top left corner */}
+                  <button
+                    onClick={(e) => toggleWishlist(item, e)}
+                    style={{
+                      position: "absolute",
+                      top: "8px",
+                      left: "8px",
+                      background: "rgba(255,255,255,0.9)",
+                      border: "none",
+                      borderRadius: "50%",
+                      width: "30px",
+                      height: "30px",
+                      cursor: "pointer",
+                      fontSize: "15px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+                      zIndex: 2,
+                      transition: "transform 0.15s",
+                    }}
+                  >
+                    {wished ? "❤️" : "🤍"}
+                  </button>
+
                   <img
                     src={item.thumbnail}
                     alt={item.title}
                     style={{
-                      height: "130px",
-                      width: "130px",
+                      maxHeight: "130px",
+                      maxWidth: "90%",
                       objectFit: "contain",
                     }}
                   />
@@ -475,12 +548,14 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
                 <th style={{ padding: "14px 16px", textAlign: "left", fontSize: "13px" }}>Product</th>
                 <th style={{ padding: "14px 16px", textAlign: "left", fontSize: "13px" }}>Price</th>
                 <th style={{ padding: "14px 16px", textAlign: "left", fontSize: "13px" }}>Status</th>
+                <th style={{ padding: "14px 16px", textAlign: "left", fontSize: "13px" }}>Wishlist</th>
                 <th style={{ padding: "14px 16px", textAlign: "left", fontSize: "13px" }}>Action</th>
               </tr>
             </thead>
             <tbody>
               {sortdata.map((item, index) => {
                 const isInCart = inCart(item.id);
+                const wished = isInWishlist(item.id);
                 return (
                   <tr
                     key={item.id}
@@ -489,8 +564,8 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
                       backgroundColor: isInCart
                         ? "#f0fdf4"
                         : index % 2 === 0
-                        ? "#fafafa"
-                        : "white",
+                          ? "#fafafa"
+                          : "white",
                       borderBottom: "1px solid #f0f0f0",
                       transition: "background 0.2s",
                       cursor: "pointer",
@@ -557,6 +632,19 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
                           Not Added
                         </span>
                       )}
+                    </td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <button
+                        onClick={(e) => toggleWishlist(item, e)}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          fontSize: "16px",
+                        }}
+                      >
+                        {wished ? "❤️" : "🤍"}
+                      </button>
                     </td>
                     <td style={{ padding: "12px 16px" }}>
                       <button

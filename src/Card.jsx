@@ -1,26 +1,127 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-const Card = ({ card, removetocard }) => {
+const Card = ({ card, removetocard, hideContainer = false }) => {
   const total = card.reduce((sum, item) => sum + item.price, 0);
   const [model, setmodel] = useState(false);
   const [loading, setloading] = useState(false);
 
-  const handlecheakout = () => {
+  // Wishlist state - same localStorage key jo Productlist.jsx use karta hai
+  const [wishlist, setWishlist] = useState(() => {
+    const saved = localStorage.getItem("wishlist");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("wishlist", JSON.stringify(wishlist));
+  }, [wishlist]);
+
+  const isInWishlist = (id) => wishlist.some((w) => w.id === id);
+
+  const toggleWishlist = (item, e) => {
+    if (e) e.stopPropagation();
+    setWishlist((prev) =>
+      prev.some((w) => w.id === item.id)
+        ? prev.filter((w) => w.id !== item.id)
+        : [...prev, item]
+    );
+  };
+
+  // Razorpay Checkout Handler
+  const handlecheakout = async () => {
     if (card.length === 0) {
       alert("⚠️ Your cart is empty. Add items first!");
-    } else {
-      setloading(true);
-      setTimeout(() => {
+      return;
+    }
+
+    setloading(true);
+
+    try {
+      // 1. Load Razorpay SDK Script dynamically if not present
+      if (!window.Razorpay) {
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        document.body.appendChild(script);
+        await new Promise((resolve) => (script.onload = resolve));
+      }
+
+      // 2. Call Node.js Backend to create Order ID
+      const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const res = await fetch(`${backendUrl}/api/checkout/create-order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: total }),
+      });
+
+      const orderData = await res.json();
+
+      if (!orderData.success) {
+        alert("Could not initialize payment. Please try again.");
         setloading(false);
-        setmodel(`your order of $${total.toFixed(2)}`);
-      }, 2000);
+        return;
+      }
+
+      // 3. Configure Razorpay Popup Options
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_TTYaK7Gio4GLfw",
+        amount: orderData.order.amount,
+        currency: orderData.order.currency,
+        name: "RCE Store",
+        description: `Purchase of ${card.length} item(s)`,
+        order_id: orderData.order.id,
+        handler: async function (response) {
+          // 4. Verify Payment Signature via Backend
+          try {
+            const verifyRes = await fetch(`${backendUrl}/api/checkout/verify`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            });
+
+            const verifyResult = await verifyRes.json();
+
+            if (verifyResult.success) {
+              setmodel(`your order of $${total.toFixed(2)}`);
+            } else {
+              alert("❌ Payment verification failed. Please contact support.");
+            }
+          } catch (err) {
+            console.error("Verification error:", err);
+            alert("Network error during payment verification.");
+          } finally {
+            setloading(false);
+          }
+        },
+        prefill: {
+          name: "Customer Name",
+          email: "customer@example.com",
+          contact: "9999999999",
+        },
+        theme: {
+          color: "#1a1a2e",
+        },
+        modal: {
+          ondismiss: function () {
+            setloading(false);
+          },
+        },
+      };
+
+      const paymentWindow = new window.Razorpay(options);
+      paymentWindow.open();
+    } catch (error) {
+      console.error("Checkout Handler Error:", error);
+      alert("Failed to connect to server. Check if backend is running.");
+      setloading(false);
     }
   };
 
-  return (
-    <div style={{ background: "linear-gradient(135deg, #f5f7fa 0%, #e8f0e9 100%)", fontFamily: "'Segoe UI', sans-serif", padding: "24px 40px" }}>
-
+  const cartContent = (
+    <>
       {model && (
         <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 }}>
           <div style={{ backgroundColor: "white", borderRadius: "20px", padding: "20px", textAlign: "center", maxWidth: "260px", width: "75%", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
@@ -34,21 +135,27 @@ const Card = ({ card, removetocard }) => {
         </div>
       )}
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
-        <div>
-          <h1 style={{ margin: 0, fontSize: "clamp(22px, 5vw, 32px)", fontWeight: "800", color: "#1a1a2e", letterSpacing: "-1px" }}>🛒 Your Cart</h1>
-          <p style={{ margin: "4px 0 0", color: "#888", fontSize: "14px" }}>
-            {card.length === 0 ? "Your cart is empty" : `${card.length} item${card.length > 1 ? "s" : ""} added`}
-          </p>
-        </div>
-        <div style={{ backgroundColor: card.length > 0 ? "#2ecc71" : "#ccc", color: "white", borderRadius: "20px", padding: "8px 18px", fontWeight: "bold", fontSize: "14px" }}>
-          🛍️ {card.length} items
-        </div>
-      </div>
+      {!hideContainer && (
+        <>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
+            <div>
+              <h1 style={{ margin: 0, fontSize: "clamp(22px, 5vw, 32px)", fontWeight: "800", color: "#1a1a2e", letterSpacing: "-1px" }}>🛒 Your Cart</h1>
+              <p style={{ margin: "4px 0 0", color: "#888", fontSize: "14px" }}>
+                {card.length === 0 ? "Your cart is empty" : `${card.length} item${card.length > 1 ? "s" : ""} added`}
+              </p>
+            </div>
+            <div style={{ display: "flex", gap: "10px" }}>
+              <div style={{ backgroundColor: card.length > 0 ? "#2ecc71" : "#ccc", color: "white", borderRadius: "20px", padding: "8px 18px", fontWeight: "bold", fontSize: "14px" }}>
+                🛍️ {card.length} items
+              </div>
+            </div>
+          </div>
 
-      <Link to={"/Get"} style={{ display: "inline-flex", alignItems: "center", gap: "6px", backgroundColor: "#1a1a2e", color: "white", textDecoration: "none", padding: "10px 18px", borderRadius: "10px", fontWeight: "700", fontSize: "13px", marginBottom: "20px" }}>
-        ← Continue Shopping
-      </Link>
+          <Link to={"/Get"} style={{ display: "inline-flex", alignItems: "center", gap: "6px", backgroundColor: "#1a1a2e", color: "white", textDecoration: "none", padding: "10px 18px", borderRadius: "10px", fontWeight: "700", fontSize: "13px", marginBottom: "20px" }}>
+            ← Continue Shopping
+          </Link>
+        </>
+      )}
 
       {card.length === 0 ? (
         <div style={{ backgroundColor: "white", borderRadius: "16px", padding: "40px 20px", textAlign: "center", boxShadow: "0 4px 20px rgba(0,0,0,0.06)" }}>
@@ -58,26 +165,49 @@ const Card = ({ card, removetocard }) => {
         </div>
       ) : (
         <>
-          <div style={{ display: "grid",
-           gridTemplateColumns: window.innerWidth < 768 ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
-              gap: "16px",
-               marginBottom: "32px" }}>
-            {card.map((item) => (
-              <div key={item.id} style={{ backgroundColor: "white", borderRadius: "16px", overflow: "hidden", boxShadow: "0 4px 20px rgba(0,0,0,0.07)", display: "flex", flexDirection: "column" }}>
-                <div style={{ backgroundColor: "#f8f8f8", display: "flex", justifyContent: "center", alignItems: "center", padding: "16px", height: "140px" }}>
-                  <img src={item.thumbnail} alt={item.title} style={{ height: "110px", width: "110px", objectFit: "contain" }} />
+          <div className="product-grid" style={{ marginBottom: "32px" }}>
+            {card.map((item) => {
+              const wished = isInWishlist(item.id);
+              return (
+                <div key={item.id} style={{ backgroundColor: "white", borderRadius: "16px", overflow: "hidden", boxShadow: "0 4px 20px rgba(0,0,0,0.07)", display: "flex", flexDirection: "column" }}>
+                  <div style={{ position: "relative", backgroundColor: "#f8f8f8", display: "flex", justifyContent: "center", alignItems: "center", padding: "16px", height: "140px" }}>
+                    {/* ❤️ Wishlist button - top right corner */}
+                    <button
+                      onClick={(e) => toggleWishlist(item, e)}
+                      style={{
+                        position: "absolute",
+                        top: "8px",
+                        right: "8px",
+                        background: "rgba(255,255,255,0.9)",
+                        border: "none",
+                        borderRadius: "50%",
+                        width: "30px",
+                        height: "30px",
+                        cursor: "pointer",
+                        fontSize: "15px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+                        zIndex: 2,
+                      }}
+                    >
+                      {wished ? "❤️" : "🤍"}
+                    </button>
+                    <img src={item.thumbnail} alt={item.title} style={{ maxHeight: "110px", maxWidth: "90%", objectFit: "contain" }} />
+                  </div>
+                  <div style={{ padding: "12px 14px", flex: 1, display: "flex", flexDirection: "column", gap: "8px" }}>
+                    <p style={{ margin: 0, fontWeight: "700", fontSize: "13px", color: "#1a1a2e", lineHeight: "1.4", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                      {item.title}
+                    </p>
+                    <p style={{ margin: 0, fontSize: "17px", fontWeight: "800", color: "#2ecc71" }}>${item.price}</p>
+                    <button onClick={() => removetocard(item.id)} style={{ marginTop: "auto", width: "100%", padding: "10px", backgroundColor: "#e6381d", color: "white", border: "none", borderRadius: "10px", cursor: "pointer", fontWeight: "700", fontSize: "12px" }}>
+                      🗑️ Remove
+                    </button>
+                  </div>
                 </div>
-                <div style={{ padding: "12px 14px", flex: 1, display: "flex", flexDirection: "column", gap: "8px" }}>
-                  <p style={{ margin: 0, fontWeight: "700", fontSize: "13px", color: "#1a1a2e", lineHeight: "1.4", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                    {item.title}
-                  </p>
-                  <p style={{ margin: 0, fontSize: "17px", fontWeight: "800", color: "#2ecc71" }}>${item.price}</p>
-                  <button onClick={() => removetocard(item.id)} style={{ marginTop: "auto", width: "100%", padding: "10px", backgroundColor: "#e6381d", color: "white", border: "none", borderRadius: "10px", cursor: "pointer", fontWeight: "700", fontSize: "12px" }}>
-                    🗑️ Remove
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -102,6 +232,16 @@ const Card = ({ card, removetocard }) => {
           </div>
         </>
       )}
+    </>
+  );
+
+  if (hideContainer) {
+    return cartContent;
+  }
+
+  return (
+    <div className="page-container">
+      {cartContent}
     </div>
   );
 };
