@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Productlist from "./Productlist";
 
-const Get = ({ card, addtocard, removetocard }) => {
+const Get = ({ card, addtocard, removetocard, requireAuth }) => {
   const [data, setdata] = useState([]);
 
   useEffect(() => {
@@ -24,6 +24,7 @@ const Get = ({ card, addtocard, removetocard }) => {
         card={card}
         addtocard={addtocard}
         removetocard={removetocard}
+        requireAuth={requireAuth}
       />
     </div>
   );

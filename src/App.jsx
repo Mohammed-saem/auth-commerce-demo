@@ -11,11 +11,12 @@ import Footer from "./Footer.jsx";
 import Bottamnav from "./Bottamnav.jsx";
 import Profile from "./Profile.jsx";
 import Account from "./Account.jsx";
-
+import AuthModal from "./AuthModal.jsx";
+import { auth } from "./firebase";
 
 function Hideauth() {
   const location = useLocation();
-  const hidenavpath = ['/', '/Login', '/Singup', '/Forget']
+  const hidenavpath = ['/Login', '/Singup', '/Forget']
   const shouldhide = hidenavpath.includes(location.pathname);
 
   return (
@@ -26,8 +27,20 @@ function Hideauth() {
   )
 }
 
-
 function App() {
+  const [currentUser, setCurrentUser] = useState(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalTab, setAuthModalTab] = useState('login'); // 'login' or 'signup'
+  const [onAuthSuccess, setOnAuthSuccess] = useState(null);
+
+  // Monitor auth state changes globally
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
+
   const [card, setcard] = useState(() => {
     try {
       const savedCart = localStorage.getItem("cart");
@@ -49,23 +62,49 @@ function App() {
   const addtocard = (data) => setcard([...card, data]);
   const removetocard = (id) => setcard(card.filter((item) => item.id !== id));
 
+  // requireAuth wrapper
+  const requireAuth = (callback, preferredTab = 'login') => {
+    if (auth.currentUser || currentUser) {
+      callback();
+    } else {
+      setOnAuthSuccess(() => callback);
+      setAuthModalTab(preferredTab);
+      setIsAuthModalOpen(true);
+    }
+  };
+
+  const handleAuthSuccess = () => {
+    setIsAuthModalOpen(false);
+    if (onAuthSuccess) {
+      onAuthSuccess();
+      setOnAuthSuccess(null);
+    }
+  };
+
   return (
     <BrowserRouter>
       <Header />
       <Routes>
-        <Route path="/Get" element={<Get card={card} addtocard={addtocard} removetocard={removetocard} />} />
+        {/* Website opens directly to the homepage (Get) instead of Login */}
+        <Route path="/" element={<Get card={card} addtocard={addtocard} removetocard={removetocard} requireAuth={requireAuth} />} />
+        <Route path="/Get" element={<Get card={card} addtocard={addtocard} removetocard={removetocard} requireAuth={requireAuth} />} />
 
         <Route path="/Card" element={<Card card={card} removetocard={removetocard} />} />
-        <Route path="/" element={<Login />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/Singup" element={<Singup />} />
         <Route path="/Forget" element={<Forget />} />
         <Route path="/Profile" element={<Profile />} />
-        <Route path="/Account" element={<Account card={card} addtocard={addtocard} removetocard={removetocard} />} />
-
+        <Route path="/Account" element={<Account card={card} addtocard={addtocard} removetocard={removetocard} requireAuth={requireAuth} />} />
       </Routes>
       <Hideauth />
-
+      
+      {/* Global premium Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialTab={authModalTab}
+        onSuccess={handleAuthSuccess}
+      />
     </BrowserRouter>
   );
 }

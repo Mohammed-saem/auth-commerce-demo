@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-const Productlist = ({ data, card, addtocard, removetocard }) => {
+const Productlist = ({ data, card, addtocard, removetocard, requireAuth }) => {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("ALL");
   const [view, setView] = useState("grid");
@@ -22,11 +22,21 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
 
   const toggleWishlist = (item, e) => {
     if (e) e.stopPropagation(); // card click trigger na ho
-    setWishlist((prev) =>
-      prev.some((w) => w.id === item.id)
-        ? prev.filter((w) => w.id !== item.id)
-        : [...prev, item]
-    );
+    if (requireAuth) {
+      requireAuth(() => {
+        setWishlist((prev) =>
+          prev.some((w) => w.id === item.id)
+            ? prev.filter((w) => w.id !== item.id)
+            : [...prev, item]
+        );
+      }, 'signup');
+    } else {
+      setWishlist((prev) =>
+        prev.some((w) => w.id === item.id)
+          ? prev.filter((w) => w.id !== item.id)
+          : [...prev, item]
+      );
+    }
   };
 
   const searchdata = data.filter((item) =>
@@ -180,9 +190,15 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
 
             <button
               onClick={() => {
-                inCart(selectproduct.id)
-                  ? removetocard(selectproduct.id)
-                  : addtocard(selectproduct);
+                if (inCart(selectproduct.id)) {
+                  removetocard(selectproduct.id);
+                } else {
+                  if (requireAuth) {
+                    requireAuth(() => addtocard(selectproduct), 'login');
+                  } else {
+                    addtocard(selectproduct);
+                  }
+                }
               }}
               style={{
                 width: "100%",
@@ -502,7 +518,15 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      isInCart ? removetocard(item.id) : addtocard(item);
+                      if (isInCart) {
+                        removetocard(item.id);
+                      } else {
+                        if (requireAuth) {
+                          requireAuth(() => addtocard(item), 'login');
+                        } else {
+                          addtocard(item);
+                        }
+                      }
                     }}
                     style={{
                       marginTop: "auto",
@@ -650,7 +674,15 @@ const Productlist = ({ data, card, addtocard, removetocard }) => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          isInCart ? removetocard(item.id) : addtocard(item);
+                          if (isInCart) {
+                            removetocard(item.id);
+                          } else {
+                            if (requireAuth) {
+                              requireAuth(() => addtocard(item), 'login');
+                            } else {
+                              addtocard(item);
+                            }
+                          }
                         }}
                         style={{
                           padding: "8px 14px",

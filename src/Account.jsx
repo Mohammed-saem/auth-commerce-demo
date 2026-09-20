@@ -83,7 +83,7 @@ const RotateIcon = ({ size = 26, color = "#1a1a2e" }) => (
 );
 
 // --- Sub-component to prevent deep nesting indentation wrapping ---
-const WishlistCard = ({ item, isInCart, addtocard, removetocard, removeFromWishlist }) => {
+const WishlistCard = ({ item, isInCart, addtocard, removetocard, removeFromWishlist, requireAuth }) => {
     return (
         <div
             style={{
@@ -196,9 +196,17 @@ const WishlistCard = ({ item, isInCart, addtocard, removetocard, removeFromWishl
                 )}
 
                 <button
-                    onClick={() =>
-                        isInCart ? removetocard(item.id) : addtocard(item)
-                    }
+                    onClick={() => {
+                        if (isInCart) {
+                            removetocard(item.id);
+                        } else {
+                            if (requireAuth) {
+                                requireAuth(() => addtocard(item), 'login');
+                            } else {
+                                addtocard(item);
+                            }
+                        }
+                    }}
                     style={{
                         marginTop: "auto",
                         width: "100%",
@@ -219,7 +227,7 @@ const WishlistCard = ({ item, isInCart, addtocard, removetocard, removeFromWishl
     );
 };
 
-const Account = ({ card = [], addtocard, removetocard }) => {
+const Account = ({ card = [], addtocard, removetocard, requireAuth }) => {
     const location = useLocation();
 
     // Tab State: "wishlist" or "cart"
@@ -418,6 +426,7 @@ const Account = ({ card = [], addtocard, removetocard }) => {
                                     addtocard={addtocard}
                                     removetocard={removetocard}
                                     removeFromWishlist={removeFromWishlist}
+                                    requireAuth={requireAuth}
                                 />
                             ))}
                         </div>

@@ -108,7 +108,7 @@ const Profile = () => {
   const handleSingout = () => {
     signOut(auth).then(() => {
       alert('logout Successfully')
-      navigate('/Login')
+      navigate('/')
     })
   }
 
