@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { auth } from "./firebase"; // Firebase Auth Import zaroori hai
 
 const Card = ({ card, removetocard, hideContainer = false }) => {
   const total = card.reduce((sum, item) => sum + item.price, 0);
   const [model, setmodel] = useState(false);
   const [loading, setloading] = useState(false);
 
-  // Wishlist state - same localStorage key jo Productlist.jsx use karta hai
+  // Wishlist state
   const [wishlist, setWishlist] = useState(() => {
     const saved = localStorage.getItem("wishlist");
     return saved ? JSON.parse(saved) : [];
@@ -27,17 +28,22 @@ const Card = ({ card, removetocard, hideContainer = false }) => {
     );
   };
 
-  // Razorpay Checkout Handler
   const handlecheakout = async () => {
     if (card.length === 0) {
       alert("⚠️ Your cart is empty. Add items first!");
       return;
     }
 
+    const user = auth.currentUser;
+    if (!user) {
+      alert("⚠️ Please login first to proceed with checkout.");
+      return;
+    }
+
     setloading(true);
 
     try {
-      // 1. Load Razorpay SDK Script dynamically if not present
+      // 1. Load Razorpay Script if not loaded
       if (!window.Razorpay) {
         const script = document.createElement("script");
         script.src = "https://checkout.razorpay.com/v1/checkout.js";
@@ -45,8 +51,10 @@ const Card = ({ card, removetocard, hideContainer = false }) => {
         await new Promise((resolve) => (script.onload = resolve));
       }
 
-      // 2. Call Node.js Backend to create Order ID
       const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const token = await user.getIdToken();
+
+      // 2. Order Creation Request to Backend
       const res = await fetch(`${backendUrl}/api/checkout/create-order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -55,39 +63,44 @@ const Card = ({ card, removetocard, hideContainer = false }) => {
 
       const orderData = await res.json();
 
-      if (!orderData.success) {
-        alert("Could not initialize payment. Please try again.");
+      if (!res.ok || !orderData.success) {
+        alert("❌ Could not initialize payment. Please check server logs.");
         setloading(false);
         return;
       }
 
-      // 3. Configure Razorpay Popup Options
+      // 3. Razorpay Options Setup
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_TTYaK7Gio4GLfw",
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: orderData.order.amount,
         currency: orderData.order.currency,
-        name: "RCE Store",
+        name: "ShopZone",
         description: `Purchase of ${card.length} item(s)`,
         order_id: orderData.order.id,
         handler: async function (response) {
-          // 4. Verify Payment Signature via Backend
           try {
+            // Send verification request with Firebase Bearer Token
             const verifyRes = await fetch(`${backendUrl}/api/checkout/verify`, {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
               body: JSON.stringify({
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
+                products: card,
+                totalAmount: total,
               }),
             });
 
             const verifyResult = await verifyRes.json();
 
             if (verifyResult.success) {
-              setmodel(`your order of $${total.toFixed(2)}`);
+              setmodel(`order of $${total.toFixed(2)}`);
             } else {
-              alert("❌ Payment verification failed. Please contact support.");
+              alert("❌ Payment verification failed. " + verifyResult.message);
             }
           } catch (err) {
             console.error("Verification error:", err);
@@ -97,9 +110,8 @@ const Card = ({ card, removetocard, hideContainer = false }) => {
           }
         },
         prefill: {
-          name: "Customer Name",
-          email: "customer@example.com",
-          contact: "9999999999",
+          name: user.displayName || "Customer",
+          email: user.email || "customer@example.com",
         },
         theme: {
           color: "#1a1a2e",
@@ -171,7 +183,6 @@ const Card = ({ card, removetocard, hideContainer = false }) => {
               return (
                 <div key={item.id} style={{ backgroundColor: "white", borderRadius: "16px", overflow: "hidden", boxShadow: "0 4px 20px rgba(0,0,0,0.07)", display: "flex", flexDirection: "column" }}>
                   <div style={{ position: "relative", backgroundColor: "#f8f8f8", display: "flex", justifyContent: "center", alignItems: "center", padding: "16px", height: "140px" }}>
-                    {/* ❤️ Wishlist button - top right corner */}
                     <button
                       onClick={(e) => toggleWishlist(item, e)}
                       style={{

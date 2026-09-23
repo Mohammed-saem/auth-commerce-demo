@@ -7,13 +7,11 @@ const Productlist = ({ data, card, addtocard, removetocard, requireAuth }) => {
   const [view, setView] = useState("grid");
   const [selectproduct, setselectproduct] = useState(null);
 
-  // Wishlist state - localStorage se load karo
   const [wishlist, setWishlist] = useState(() => {
     const saved = localStorage.getItem("wishlist");
     return saved ? JSON.parse(saved) : [];
   });
 
-  // Jab bhi wishlist change ho, localStorage mein save karo
   useEffect(() => {
     localStorage.setItem("wishlist", JSON.stringify(wishlist));
   }, [wishlist]);

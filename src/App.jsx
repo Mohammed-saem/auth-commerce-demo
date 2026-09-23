@@ -16,7 +16,8 @@ import { auth } from "./firebase";
 
 function Hideauth() {
   const location = useLocation();
-  const hidenavpath = ['/Login', '/Singup', '/Forget']
+
+  const hidenavpath = ["/Login", "/Singup", "/Forget"];
   const shouldhide = hidenavpath.includes(location.pathname);
 
   return (
@@ -24,46 +25,103 @@ function Hideauth() {
       {!shouldhide && <Footer />}
       {!shouldhide && <Bottamnav />}
     </>
-  )
+  );
 }
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalTab, setAuthModalTab] = useState('login'); // 'login' or 'signup'
+  const [authModalTab, setAuthModalTab] = useState("login");
   const [onAuthSuccess, setOnAuthSuccess] = useState(null);
 
-  // Monitor auth state changes globally
+  // Firebase auth state
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setCurrentUser(user);
     });
+
     return () => unsubscribe();
   }, []);
 
-  const [card, setcard] = useState(() => {
+ 
+  const [card, setcard] = useState([]);
+
+
+ const addtocard = async (data) => {
     try {
-      const savedCart = localStorage.getItem("cart");
-      return savedCart ? JSON.parse(savedCart) : [];
+      const user = auth.currentUser;
+
+      if (!user) {
+        alert("Please login first");
+        return;
+      }
+
+      const token = await user.getIdToken();
+
+      // Updated cart
+      const updatedCart = [...card, data];
+
+      // Fallback Backend URL (env missing hone par localhost use karega)
+      const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+      console.log("Backend URL:", backendUrl);
+      console.log("Sending cart to backend...");
+
+      // Send cart to backend
+      const response = await fetch(`${backendUrl}/api/card`, {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+
+        body: JSON.stringify({
+          items: updatedCart.map((item) => ({
+            productId: String(item.id),
+            name: item.title,
+            price: item.price,
+            quantity: 1,
+          })),
+        }),
+      });
+
+      console.log("Backend response status:", response.status);
+
+      const result = await response.json();
+
+      console.log("Backend response:", result);
+
+      if (!response.ok || !result.success) {
+        console.error("Cart save error:", result);
+
+        alert(
+          result.message || "Cart MongoDB mein save nahi hua"
+        );
+
+        return;
+      }
+
+      // Backend successful hone ke baad React cart update
+      setcard(updatedCart);
+
+      console.log("✅ Cart saved in MongoDB");
     } catch (error) {
-      console.error("Error loading cart from localStorage", error);
-      return [];
+      console.error("FULL ADD TO CART ERROR:", error);
+
+      alert(
+        `Server se connect nahi ho pa raha: ${error.message}`
+      );
     }
-  });
+  };
 
-  useEffect(() => {
-    try {
-      localStorage.setItem("cart", JSON.stringify(card));
-    } catch (error) {
-      console.error("Error saving cart to localStorage", error);
-    }
-  }, [card]);
+  // Remove product from cart
+  const removetocard = (id) => {
+    setcard(card.filter((item) => item.id !== id));
+  };
 
-  const addtocard = (data) => setcard([...card, data]);
-  const removetocard = (id) => setcard(card.filter((item) => item.id !== id));
-
-  // requireAuth wrapper
-  const requireAuth = (callback, preferredTab = 'login') => {
+  // Require authentication
+  const requireAuth = (callback, preferredTab = "login") => {
     if (auth.currentUser || currentUser) {
       callback();
     } else {
@@ -73,8 +131,10 @@ function App() {
     }
   };
 
+  // Auth modal success
   const handleAuthSuccess = () => {
     setIsAuthModalOpen(false);
+
     if (onAuthSuccess) {
       onAuthSuccess();
       setOnAuthSuccess(null);
@@ -84,21 +144,71 @@ function App() {
   return (
     <BrowserRouter>
       <Header />
-      <Routes>
-        {/* Website opens directly to the homepage (Get) instead of Login */}
-        <Route path="/" element={<Get card={card} addtocard={addtocard} removetocard={removetocard} requireAuth={requireAuth} />} />
-        <Route path="/Get" element={<Get card={card} addtocard={addtocard} removetocard={removetocard} requireAuth={requireAuth} />} />
 
-        <Route path="/Card" element={<Card card={card} removetocard={removetocard} />} />
+      <Routes>
+        {/* Home */}
+        <Route
+          path="/"
+          element={
+            <Get
+              card={card}
+              addtocard={addtocard}
+              removetocard={removetocard}
+              requireAuth={requireAuth}
+            />
+          }
+        />
+
+        {/* Get */}
+        <Route
+          path="/Get"
+          element={
+            <Get
+              card={card}
+              addtocard={addtocard}
+              removetocard={removetocard}
+              requireAuth={requireAuth}
+            />
+          }
+        />
+
+        {/* Cart */}
+        <Route
+          path="/Card"
+          element={
+            <Card
+              card={card}
+              removetocard={removetocard}
+            />
+          }
+        />
+
+        {/* Authentication */}
         <Route path="/Login" element={<Login />} />
         <Route path="/Singup" element={<Singup />} />
         <Route path="/Forget" element={<Forget />} />
+
+        {/* Profile */}
         <Route path="/Profile" element={<Profile />} />
-        <Route path="/Account" element={<Account card={card} addtocard={addtocard} removetocard={removetocard} requireAuth={requireAuth} />} />
+
+        {/* Account */}
+        <Route
+          path="/Account"
+          element={
+            <Account
+              card={card}
+              addtocard={addtocard}
+              removetocard={removetocard}
+              requireAuth={requireAuth}
+            />
+          }
+        />
       </Routes>
+
+      {/* Footer + Bottom Navigation */}
       <Hideauth />
-      
-      {/* Global premium Auth Modal */}
+
+      {/* Auth Modal */}
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
