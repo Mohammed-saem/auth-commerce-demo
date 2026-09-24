@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { auth } from "./firebase"; // Firebase Auth Import zaroori hai
+import { auth } from "./firebase"; // Firebase Auth import required
 
 const Card = ({ card, removetocard, hideContainer = false }) => {
   const total = card.reduce((sum, item) => sum + item.price, 0);

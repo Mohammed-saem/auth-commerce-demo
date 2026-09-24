@@ -52,7 +52,7 @@ function App() {
       const user = auth.currentUser;
 
       if (!user) {
-        alert("Please login first");
+        alert("Please log in first");
         return;
       }
 
@@ -61,7 +61,7 @@ function App() {
       // Updated cart
       const updatedCart = [...card, data];
 
-      // Fallback Backend URL (env missing hone par localhost use karega)
+      // Fallback Backend URL (defaults to localhost if env variable is missing)
       const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
       console.log("Backend URL:", backendUrl);
@@ -96,21 +96,21 @@ function App() {
         console.error("Cart save error:", result);
 
         alert(
-          result.message || "Cart MongoDB mein save nahi hua"
+          result.message || "Failed to save cart to database"
         );
 
         return;
       }
 
-      // Backend successful hone ke baad React cart update
+      // Update React cart state after backend succeeds
       setcard(updatedCart);
 
-      console.log("✅ Cart saved in MongoDB");
+      console.log("✅ Cart saved in database");
     } catch (error) {
       console.error("FULL ADD TO CART ERROR:", error);
 
       alert(
-        `Server se connect nahi ho pa raha: ${error.message}`
+        `Failed to connect to the server: ${error.message}`
       );
     }
   };

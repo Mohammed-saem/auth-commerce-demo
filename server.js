@@ -25,7 +25,7 @@ const razorpay = new Razorpay({
 
 app.get('/', (req, res) => res.send('Server is running ✅'));
 
-// ---------- Signup ke baad user DB mein save ----------
+// ---------- Save user to DB after signup ----------
 app.post('/api/user/save', verifyToken, async (req, res) => {
     try {
         const { uid, email } = req.user;
@@ -49,11 +49,11 @@ app.post('/api/card', verifyToken, async (req, res) => {
         const { uid } = req.user;
         const { items } = req.body;
 
-        // findOneAndUpdate se direct atomic update (Version Error nahi aayega)
+        // Atomic update using findOneAndUpdate (avoids version conflict errors)
         const updatedCart = await Card.findOneAndUpdate(
             { userId: uid },
             { $set: { items: items } },
-            { new: true, upsert: true } // Document nahi mila toh naya bana dega
+            { new: true, upsert: true } // Creates a new document if not found
         );
 
         res.status(200).json({ success: true, cart: updatedCart });
@@ -131,7 +131,7 @@ app.post('/api/checkout/verify', verifyToken, async (req, res) => {
             status: 'confirmed',
         });
 
-        // Order ban gaya -> cart khali kar do (Card model use karo, Cart nahi)
+        // Order confirmed -> clear cart (using Card model)
         await Card.findOneAndUpdate({ userId: req.user.uid }, { items: [] });
 
         return res.status(200).json({

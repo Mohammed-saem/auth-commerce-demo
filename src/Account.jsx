@@ -241,7 +241,7 @@ const Account = ({ card = [], addtocard, removetocard, requireAuth }) => {
         }
     }, [location.state]);
 
-    // Wishlist state - same localStorage key jo Productlist.jsx use karta hai
+    // Wishlist state - uses same localStorage key as Productlist.jsx
     const [wishlist, setWishlist] = useState(() => {
         const saved = localStorage.getItem("wishlist");
         return saved ? JSON.parse(saved) : [];

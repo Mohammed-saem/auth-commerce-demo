@@ -35,11 +35,11 @@ const Singup = () => {
       }, 2000);
     }).catch((error) => {
       if (error.code === 'auth/email-already-in-use') {
-        alert('email is Already register please login')
+        alert('This email is already registered. Please log in.')
         setform({ Name: "", email: "", password: "" });
         navigate("/Login")
       } else {
-        alert('somthing went wrong')
+        alert('Something went wrong. Please try again.')
       }
     })
   }

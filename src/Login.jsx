@@ -19,7 +19,7 @@ const Login = () => {
     seterror("");
 
     if (form.email.trim() === "" && form.password.trim() === "") {
-      seterror("Email and password Required");
+      seterror("Email and password are required");
       return;
     }
 
@@ -42,7 +42,7 @@ const Login = () => {
       const message = {
         "auth/invalid-credential": "Invalid email or password",
       }
-      seterror(message[err.code] || 'somthing went wrong, try again')
+      seterror(message[err.code] || 'Something went wrong, please try again')
     })
   }
 

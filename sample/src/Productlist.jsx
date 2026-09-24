@@ -19,7 +19,7 @@ const Productlist = ({ data, card, addtocard, removetocard, requireAuth }) => {
   const isInWishlist = (id) => wishlist.some((w) => w.id === id);
 
   const toggleWishlist = (item, e) => {
-    if (e) e.stopPropagation(); // card click trigger na ho
+    if (e) e.stopPropagation(); // Prevent triggering card click
     if (requireAuth) {
       requireAuth(() => {
         setWishlist((prev) =>
