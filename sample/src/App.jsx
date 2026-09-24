@@ -43,11 +43,11 @@ function App() {
     return () => unsubscribe();
   }, []);
 
- 
+
   const [card, setcard] = useState([]);
 
 
- const addtocard = async (data) => {
+  const addtocard = async (data) => {
     try {
       const user = auth.currentUser;
 
@@ -66,8 +66,6 @@ function App() {
 
       console.log("Backend URL:", backendUrl);
       console.log("Sending cart to backend...");
-
-      // Send cart to backend
       const response = await fetch(`${backendUrl}/api/card`, {
         method: "POST",
 
@@ -75,7 +73,6 @@ function App() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-
         body: JSON.stringify({
           items: updatedCart.map((item) => ({
             productId: String(item.id),
@@ -85,7 +82,6 @@ function App() {
           })),
         }),
       });
-
       console.log("Backend response status:", response.status);
 
       const result = await response.json();

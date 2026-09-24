@@ -2,14 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
-  sendPasswordResetEmail,
-  GoogleAuthProvider,
-  signInWithCredential
+  sendPasswordResetEmail 
 } from "firebase/auth";
 import { auth } from "./firebase";
 import "./AuthModal.css";
 
-// SVG Icons
+// SVG Icons for buttons and inputs
 const CloseIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <line x1="18" y1="6" x2="6" y2="18" />
@@ -67,14 +65,18 @@ const FacebookIcon = () => (
 );
 
 const AuthModal = ({ isOpen, onClose, initialTab = "login", onSuccess }) => {
+  // ==========================================
+  // State
+  // ==========================================
+  // Active tab selection ("login" or "signup")
   const [activeTab, setActiveTab] = useState(initialTab);
-  
-  // Login Form State
+
+  // Login form inputs
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
-  // Signup Form State
+  // Sign up form inputs
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
@@ -82,23 +84,23 @@ const AuthModal = ({ isOpen, onClose, initialTab = "login", onSuccess }) => {
   const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false);
 
-  // Feedback State
+  // Feedback & Loading states
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Refs for auto-focusing
+  // Input refs for automatic focus
   const loginEmailRef = useRef(null);
   const signupNameRef = useRef(null);
 
-  // Synchronize activeTab with trigger choice
+  // Reset tab and messages whenever modal opens
   useEffect(() => {
     if (isOpen) {
       setActiveTab(initialTab);
       setError("");
       setSuccess("");
-      
-      // Escape key to close modal
+
+      // Close modal on Escape key press
       const handleKeyDown = (e) => {
         if (e.key === "Escape") onClose();
       };
@@ -107,7 +109,7 @@ const AuthModal = ({ isOpen, onClose, initialTab = "login", onSuccess }) => {
     }
   }, [isOpen, initialTab, onClose]);
 
-  // Handle focusing input when modal opens or active tab switches
+  // Focus the first input field smoothly when tab switches
   useEffect(() => {
     if (isOpen) {
       const timer = setTimeout(() => {
@@ -116,11 +118,15 @@ const AuthModal = ({ isOpen, onClose, initialTab = "login", onSuccess }) => {
         } else if (activeTab === "signup" && signupNameRef.current) {
           signupNameRef.current.focus();
         }
-      }, 100); // Small delay to let animations start
+      }, 150);
       return () => clearTimeout(timer);
     }
   }, [activeTab, isOpen]);
 
+  // ==========================================
+  // Handlers
+  // ==========================================
+  // Switch between Login and Signup tabs
   const handleTabSwitch = (tab) => {
     if (loading) return;
     setActiveTab(tab);
@@ -128,6 +134,19 @@ const AuthModal = ({ isOpen, onClose, initialTab = "login", onSuccess }) => {
     setSuccess("");
   };
 
+  // Clear all form inputs and feedback
+  const clearForm = () => {
+    setLoginEmail("");
+    setLoginPassword("");
+    setSignupName("");
+    setSignupEmail("");
+    setSignupPassword("");
+    setSignupConfirmPassword("");
+    setError("");
+    setSuccess("");
+  };
+
+  // Handle Login submission
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -143,12 +162,12 @@ const AuthModal = ({ isOpen, onClose, initialTab = "login", onSuccess }) => {
       await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
       setSuccess("Logged in successfully! Redirecting...");
       setLoading(false);
-      
-      // Delay to show success animation
+
+      // Brief delay to allow the user to see the success state
       setTimeout(() => {
-        onSuccess();
+        if (onSuccess) onSuccess();
         clearForm();
-      }, 1500);
+      }, 1000);
     } catch (err) {
       setLoading(false);
       const messages = {
@@ -161,17 +180,18 @@ const AuthModal = ({ isOpen, onClose, initialTab = "login", onSuccess }) => {
     }
   };
 
+  // Handle Signup submission
   const handleSignupSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
 
     if (!signupName.trim()) {
-      setError("Name is required.");
+      setError("Please enter your name.");
       return;
     }
     if (!signupEmail.trim()) {
-      setError("Email is required.");
+      setError("Please enter your email.");
       return;
     }
     if (!signupPassword || !signupConfirmPassword) {
@@ -179,7 +199,7 @@ const AuthModal = ({ isOpen, onClose, initialTab = "login", onSuccess }) => {
       return;
     }
     if (signupPassword.length < 6) {
-      setError("Password should be at least 6 characters long.");
+      setError("Password must be at least 6 characters.");
       return;
     }
     if (signupPassword !== signupConfirmPassword) {
@@ -190,15 +210,13 @@ const AuthModal = ({ isOpen, onClose, initialTab = "login", onSuccess }) => {
     setLoading(true);
     try {
       await createUserWithEmailAndPassword(auth, signupEmail, signupPassword);
-      
-      // Update local personal info placeholder name if desired
-      setSuccess("Account created successfully! Redirecting...");
+      setSuccess("Account created successfully! Welcome.");
       setLoading(false);
 
       setTimeout(() => {
-        onSuccess();
+        if (onSuccess) onSuccess();
         clearForm();
-      }, 1500);
+      }, 1000);
     } catch (err) {
       setLoading(false);
       const messages = {
@@ -210,19 +228,14 @@ const AuthModal = ({ isOpen, onClose, initialTab = "login", onSuccess }) => {
     }
   };
 
+  // Handle Forgot Password reset email
   const handleForgotPassword = async () => {
     setError("");
     setSuccess("");
 
     if (!loginEmail.trim()) {
-      setError("Please enter your email in the Login form first.");
+      setError("Please enter your email in the Login field first.");
       if (loginEmailRef.current) loginEmailRef.current.focus();
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(loginEmail)) {
-      setError("Please enter a valid email address.");
       return;
     }
 
@@ -233,267 +246,286 @@ const AuthModal = ({ isOpen, onClose, initialTab = "login", onSuccess }) => {
       setLoading(false);
     } catch (err) {
       setLoading(false);
-      setError("Failed to send reset link. User may not exist.");
+      setError("Could not send reset email. Verify your email address.");
     }
   };
 
-  // Simulated Social Login for Premium Flow
+  // Simulated Social Login
   const handleSocialLogin = (platform) => {
     if (loading) return;
     setError("");
     setSuccess("");
     setLoading(true);
 
-    // We simulate authentication with platform
     setTimeout(() => {
-      setSuccess(`Successfully authenticated via ${platform}!`);
+      setSuccess(`Signed in with ${platform}!`);
       setLoading(false);
       setTimeout(() => {
-        onSuccess();
+        if (onSuccess) onSuccess();
         clearForm();
-      }, 1200);
-    }, 1500);
+      }, 1000);
+    }, 1200);
   };
 
-  const clearForm = () => {
-    setLoginEmail("");
-    setLoginPassword("");
-    setSignupName("");
-    setSignupEmail("");
-    setSignupPassword("");
-    setSignupConfirmPassword("");
-    setError("");
-    setSuccess("");
-  };
-
+  // Don't render anything if modal is closed
   if (!isOpen) return null;
 
+  // ==========================================
+  // Render
+  // ==========================================
   return (
     <div className={`auth-overlay ${isOpen ? "open" : ""}`} onClick={onClose}>
       <div className="auth-modal-card" onClick={(e) => e.stopPropagation()}>
-        {/* Close Button */}
-        <button className="auth-close-btn" onClick={onClose} aria-label="Close modal">
+        
+        {/* Floating Close Button */}
+        <button 
+          className="auth-close-btn" 
+          onClick={onClose} 
+          aria-label="Close modal"
+          type="button"
+        >
           <CloseIcon />
         </button>
 
-        {/* LEFT PANEL - Theme Gradient and Tabs Switcher */}
-        <div className="auth-panel-left">
-          {/* Decorative shapes */}
-          <div className="auth-decor-stripe-1"></div>
-          <div className="auth-decor-stripe-2"></div>
-          <div className="auth-diagonal-edge"></div>
+        {/* LEFT / TOP SIDEBAR (Theme Banner & Tabs) */}
+        <div className="auth-sidebar">
+          <div className="auth-brand-badge">
+            <span>🛍️</span>
+            <span>ShopZone</span>
+          </div>
 
-          {/* Active Tab Sliding Pill */}
-          <div className={`auth-tab-active-pill tab-${activeTab}`}></div>
+          <div className="auth-sidebar-info">
+            <h3>{activeTab === "login" ? "Welcome Back!" : "Join ShopZone"}</h3>
+            <p>
+              {activeTab === "login" 
+                ? "Sign in to manage your orders, track wishlist items, and checkout faster." 
+                : "Create an account to unlock exclusive member discounts and quick checkout."}
+            </p>
+          </div>
 
-          {/* Vertically aligned tab labels */}
-          <div className="auth-tabs-container">
-            <button 
-              className={`auth-tab-item ${activeTab === "login" ? "active" : ""}`}
+          {/* Simple Segmented Tabs Controller */}
+          <div className="auth-tabs">
+            <button
+              type="button"
+              className={`auth-tab-btn ${activeTab === "login" ? "active" : ""}`}
               onClick={() => handleTabSwitch("login")}
             >
-              LOGIN
+              Login
             </button>
-            <button 
-              className={`auth-tab-item ${activeTab === "signup" ? "active" : ""}`}
+            <button
+              type="button"
+              className={`auth-tab-btn ${activeTab === "signup" ? "active" : ""}`}
               onClick={() => handleTabSwitch("signup")}
             >
-              SIGN IN
+              Sign Up
             </button>
           </div>
         </div>
 
-        {/* RIGHT PANEL - Dynamic Forms */}
-        <div className="auth-panel-right">
-          
-          {/* Circular profile visual */}
-          <div className="auth-profile-header">
-            <div className="auth-profile-circle">
-              <UserIcon />
-            </div>
-            <h2 className="auth-heading">
-              {activeTab === "login" ? "LOGIN" : "SIGN UP"}
+        {/* RIGHT / MAIN CONTENT AREA */}
+        <div className="auth-content">
+          <div className="auth-header">
+            <h2 className="auth-title">
+              {activeTab === "login" ? "Sign In to Your Account" : "Create a New Account"}
             </h2>
+            <p className="auth-subtitle">
+              {activeTab === "login" 
+                ? "Enter your email and password below" 
+                : "Fill in the details below to register"}
+            </p>
           </div>
 
-          {/* Alerts */}
+          {/* Alert messages */}
           {error && <div className="auth-alert auth-alert-error">{error}</div>}
           {success && <div className="auth-alert auth-alert-success">{success}</div>}
 
-          {/* Form Content viewport */}
-          <div className="auth-forms-viewport">
-            
-            {/* LOGIN FORM */}
-            <div className={`auth-form-slider ${activeTab === "login" ? "active" : "exit-left"}`}>
-              <form onSubmit={handleLoginSubmit} className="auth-form">
-                <div className="auth-input-group">
-                  <span className="auth-input-icon">
-                    <MailIcon />
-                  </span>
-                  <input 
-                    ref={loginEmailRef}
-                    type="email" 
-                    placeholder="Email"
-                    value={loginEmail}
-                    onChange={(e) => setLoginEmail(e.target.value)}
-                    className="auth-input"
-                    disabled={loading}
-                  />
-                </div>
+          {/* LOGIN FORM */}
+          {activeTab === "login" && (
+            <form onSubmit={handleLoginSubmit} className="auth-form">
+              {/* Email Input */}
+              <div className="auth-input-group">
+                <span className="auth-input-icon">
+                  <MailIcon />
+                </span>
+                <input
+                  ref={loginEmailRef}
+                  type="email"
+                  placeholder="Email Address"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  className="auth-input"
+                  disabled={loading}
+                  required
+                />
+              </div>
 
-                <div className="auth-input-group">
-                  <span className="auth-input-icon">
-                    <LockIcon />
-                  </span>
-                  <input 
-                    type={showLoginPassword ? "text" : "password"} 
-                    placeholder="Password"
-                    value={loginPassword}
-                    onChange={(e) => setLoginPassword(e.target.value)}
-                    className="auth-input"
-                    disabled={loading}
-                  />
-                  <button 
-                    type="button" 
-                    onClick={() => setShowLoginPassword(!showLoginPassword)}
-                    className="auth-input-toggle"
-                  >
-                    {showLoginPassword ? <EyeOpenIcon /> : <EyeClosedIcon />}
-                  </button>
-                </div>
+              {/* Password Input */}
+              <div className="auth-input-group">
+                <span className="auth-input-icon">
+                  <LockIcon />
+                </span>
+                <input
+                  type={showLoginPassword ? "text" : "password"}
+                  placeholder="Password"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  className="auth-input"
+                  disabled={loading}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowLoginPassword(!showLoginPassword)}
+                  className="auth-input-toggle"
+                  aria-label="Toggle password visibility"
+                >
+                  {showLoginPassword ? <EyeOpenIcon /> : <EyeClosedIcon />}
+                </button>
+              </div>
 
-                <div className="auth-action-row">
-                  <button 
-                    type="button" 
-                    className="auth-forgot-link" 
-                    onClick={handleForgotPassword}
-                    disabled={loading}
-                  >
-                    Forgot Password?
-                  </button>
-                  
-                  <button 
-                    type="submit" 
-                    className="auth-submit-btn"
-                    disabled={loading}
-                  >
-                    {loading ? "PROCESSING..." : "LOGIN"}
-                  </button>
-                </div>
-              </form>
-            </div>
+              {/* Actions: Forgot Password & Submit Button */}
+              <div className="auth-action-row">
+                <button
+                  type="button"
+                  className="auth-forgot-link"
+                  onClick={handleForgotPassword}
+                  disabled={loading}
+                >
+                  Forgot Password?
+                </button>
+                <button
+                  type="submit"
+                  className="auth-submit-btn"
+                  disabled={loading}
+                >
+                  {loading ? "Signing in..." : "Login"}
+                </button>
+              </div>
+            </form>
+          )}
 
-            {/* SIGNUP FORM */}
-            <div className={`auth-form-slider ${activeTab === "signup" ? "active" : ""}`}>
-              <form onSubmit={handleSignupSubmit} className="auth-form">
-                <div className="auth-input-group">
-                  <span className="auth-input-icon">
-                    <UserIcon />
-                  </span>
-                  <input 
-                    ref={signupNameRef}
-                    type="text" 
-                    placeholder="Name"
-                    value={signupName}
-                    onChange={(e) => setSignupName(e.target.value)}
-                    className="auth-input"
-                    disabled={loading}
-                  />
-                </div>
+          
+          {activeTab === "signup" && (
+            <form onSubmit={handleSignupSubmit} className="auth-form">
+              {/* Name Input */}
+              <div className="auth-input-group">
+                <span className="auth-input-icon">
+                  <UserIcon />
+                </span>
+                <input
+                  ref={signupNameRef}
+                  type="text"
+                  placeholder="Full Name"
+                  value={signupName}
+                  onChange={(e) => setSignupName(e.target.value)}
+                  className="auth-input"
+                  disabled={loading}
+                  required
+                />
+              </div>
 
-                <div className="auth-input-group">
-                  <span className="auth-input-icon">
-                    <MailIcon />
-                  </span>
-                  <input 
-                    type="email" 
-                    placeholder="Email"
-                    value={signupEmail}
-                    onChange={(e) => setSignupEmail(e.target.value)}
-                    className="auth-input"
-                    disabled={loading}
-                  />
-                </div>
+              {/* Email Input */}
+              <div className="auth-input-group">
+                <span className="auth-input-icon">
+                  <MailIcon />
+                </span>
+                <input
+                  type="email"
+                  placeholder="Email Address"
+                  value={signupEmail}
+                  onChange={(e) => setSignupEmail(e.target.value)}
+                  className="auth-input"
+                  disabled={loading}
+                  required
+                />
+              </div>
 
-                <div className="auth-input-group">
-                  <span className="auth-input-icon">
-                    <LockIcon />
-                  </span>
-                  <input 
-                    type={showSignupPassword ? "text" : "password"} 
-                    placeholder="Password"
-                    value={signupPassword}
-                    onChange={(e) => setSignupPassword(e.target.value)}
-                    className="auth-input"
-                    disabled={loading}
-                  />
-                  <button 
-                    type="button" 
-                    onClick={() => setShowSignupPassword(!showSignupPassword)}
-                    className="auth-input-toggle"
-                  >
-                    {showSignupPassword ? <EyeOpenIcon /> : <EyeClosedIcon />}
-                  </button>
-                </div>
+              {/* Password Input */}
+              <div className="auth-input-group">
+                <span className="auth-input-icon">
+                  <LockIcon />
+                </span>
+                <input
+                  type={showSignupPassword ? "text" : "password"}
+                  placeholder="Password (min 6 chars)"
+                  value={signupPassword}
+                  onChange={(e) => setSignupPassword(e.target.value)}
+                  className="auth-input"
+                  disabled={loading}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowSignupPassword(!showSignupPassword)}
+                  className="auth-input-toggle"
+                  aria-label="Toggle password visibility"
+                >
+                  {showSignupPassword ? <EyeOpenIcon /> : <EyeClosedIcon />}
+                </button>
+              </div>
 
-                <div className="auth-input-group">
-                  <span className="auth-input-icon">
-                    <LockIcon />
-                  </span>
-                  <input 
-                    type={showSignupConfirmPassword ? "text" : "password"} 
-                    placeholder="Confirm Password"
-                    value={signupConfirmPassword}
-                    onChange={(e) => setSignupConfirmPassword(e.target.value)}
-                    className="auth-input"
-                    disabled={loading}
-                  />
-                  <button 
-                    type="button" 
-                    onClick={() => setShowSignupConfirmPassword(!showSignupConfirmPassword)}
-                    className="auth-input-toggle"
-                  >
-                    {showSignupConfirmPassword ? <EyeOpenIcon /> : <EyeClosedIcon />}
-                  </button>
-                </div>
+              {/* Confirm Password Input */}
+              <div className="auth-input-group">
+                <span className="auth-input-icon">
+                  <LockIcon />
+                </span>
+                <input
+                  type={showSignupConfirmPassword ? "text" : "password"}
+                  placeholder="Confirm Password"
+                  value={signupConfirmPassword}
+                  onChange={(e) => setSignupConfirmPassword(e.target.value)}
+                  className="auth-input"
+                  disabled={loading}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowSignupConfirmPassword(!showSignupConfirmPassword)}
+                  className="auth-input-toggle"
+                  aria-label="Toggle confirm password visibility"
+                >
+                  {showSignupConfirmPassword ? <EyeOpenIcon /> : <EyeClosedIcon />}
+                </button>
+              </div>
 
-                <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "8px" }}>
-                  <button 
-                    type="submit" 
-                    className="auth-submit-btn"
-                    disabled={loading}
-                  >
-                    {loading ? "CREATING..." : "SIGN UP"}
-                  </button>
-                </div>
-              </form>
-            </div>
+              {/* Submit Button */}
+              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "4px" }}>
+                <button
+                  type="submit"
+                  className="auth-submit-btn"
+                  style={{ width: "100%" }}
+                  disabled={loading}
+                >
+                  {loading ? "Creating Account..." : "Create Account"}
+                </button>
+              </div>
+            </form>
+          )}
 
+          {/* Social Logins Divider & Buttons */}
+          <div className="auth-divider">
+            <span>Or continue with</span>
           </div>
 
-          {/* Social Logins Footer */}
-          <div className="auth-social-footer">
-            <span className="auth-social-label">Or Login With</span>
-            <div className="auth-social-buttons">
-              <button 
-                type="button" 
-                className="auth-social-btn" 
-                onClick={() => handleSocialLogin("Google")}
-                disabled={loading}
-              >
-                <GoogleIcon />
-                <span>Google</span>
-              </button>
-              <button 
-                type="button" 
-                className="auth-social-btn" 
-                onClick={() => handleSocialLogin("Facebook")}
-                disabled={loading}
-              >
-                <FacebookIcon />
-                <span>Facebook</span>
-              </button>
-            </div>
+          <div className="auth-social-buttons">
+            <button
+              type="button"
+              className="auth-social-btn"
+              onClick={() => handleSocialLogin("Google")}
+              disabled={loading}
+            >
+              <GoogleIcon />
+              <span>Google</span>
+            </button>
+            <button
+              type="button"
+              className="auth-social-btn"
+              onClick={() => handleSocialLogin("Facebook")}
+              disabled={loading}
+            >
+              <FacebookIcon />
+              <span>Facebook</span>
+            </button>
           </div>
 
         </div>
@@ -504,3 +536,10 @@ const AuthModal = ({ isOpen, onClose, initialTab = "login", onSuccess }) => {
 };
 
 export default AuthModal;
+
+/**
+ * Advanced pattern note:
+ * Conditional standard-flow rendering was used instead of absolute CSS slide-transforms
+ * because flex-basis collapses and coordinate offsets break on mobile viewports.
+ * This guarantees reliable auto-sizing, natural touch scrolling, and zero overflow bugs.
+ */

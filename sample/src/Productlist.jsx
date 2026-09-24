@@ -70,11 +70,14 @@ const Productlist = ({ data, card, addtocard, removetocard, requireAuth }) => {
             style={{
               backgroundColor: "white",
               borderRadius: "20px",
-              padding: "28px",
+              padding: "24px 20px",
               width: "90%",
               maxWidth: "420px",
+              maxHeight: "90vh",
+              overflowY: "auto",
               position: "relative",
               boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
+              boxSizing: "border-box",
             }}
           >
             <button
@@ -98,7 +101,7 @@ const Productlist = ({ data, card, addtocard, removetocard, requireAuth }) => {
               ✕
             </button>
 
-            {/* Wishlist button in modal too */}
+
             <button
               onClick={(e) => toggleWishlist(selectproduct, e)}
               style={{
