@@ -3,10 +3,8 @@ import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import fs from 'fs';
 import path from 'path';
 
-// Firebase credentials setup (from environment variables or local serviceAccountKey.json file)
-let serviceAccount = null;
 
-// 1. If environment variables are set (for Render / Production)
+let serviceAccount = null;
 if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_PRIVATE_KEY) {
     serviceAccount = {
         projectId: process.env.FIREBASE_PROJECT_ID,
@@ -14,7 +12,7 @@ if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_PRIVATE_KEY) {
         privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
     };
 }
-// 2. Fallback: For local testing if serviceAccountKey.json file exists
+
 else {
     const localKeyPath = path.resolve('serviceAccountKey.json');
     if (fs.existsSync(localKeyPath)) {

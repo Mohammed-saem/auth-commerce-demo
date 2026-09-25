@@ -407,7 +407,7 @@ const AuthModal = ({ isOpen, onClose, initialTab = "login", onSuccess }) => {
           
           {activeTab === "signup" && (
             <form onSubmit={handleSignupSubmit} className="auth-form">
-              {/* Name Input */}
+        
               <div className="auth-input-group">
                 <span className="auth-input-icon">
                   <UserIcon />
